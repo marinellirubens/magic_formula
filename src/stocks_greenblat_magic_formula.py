@@ -69,7 +69,15 @@ def get_config(config_file: str = os.path.join(os.path.dirname(__file__), 'confi
 
 
 def set_logger(logger: logging.Logger, log_file_name: str = 'stocks.log') -> logging.Logger:
-    """Sets the logger configuration"""
+    """Sets the logger configuration
+
+    :param logger: Logger variable
+    :type logger: logging.Logger
+    :param log_file_name: name of the log file, defaults to 'stocks.log'
+    :type log_file_name: str, optional
+    :return: logger object
+    :rtype: logging.Logger
+    """
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - (%(threadName)-10s) - %(levelname)s - %(message)s')
     handler = logging.handlers.RotatingFileHandler(log_file_name, maxBytes=1024 * 1000,
@@ -86,7 +94,16 @@ def set_logger(logger: logging.Logger, log_file_name: str = 'stocks.log') -> log
     return logger
 
 
-def ticker_is_valid(symbol, logger) -> Tuple[bool, namedtuple]:
+def ticker_is_valid(symbol: str, logger: logging.Logger) -> Tuple[bool, namedtuple]:
+    """Verify if the ticker is valid for the formula
+
+    :param symbol: Ticker symbol
+    :type symbol: str
+    :param logger: Logger object
+    :type logger: logging.Logger
+    :return: Tuple with the boolean defining if is valid, and the informations for the stock
+    :rtype: Tuple[bool, namedtuple]
+    """
     logger.debug(f'Validating ticker: {symbol}')
     
     ticker_info = namedtuple(
@@ -136,15 +153,26 @@ def ticker_is_valid(symbol, logger) -> Tuple[bool, namedtuple]:
 
 
 def return_earning_yield(symbol: str, tickers: list, df: DataFrame,
-                         index: int, roic_index: dict, LOGGER) -> DataFrame:
-    """Rules:
-      1. tirar ebit negativo
-      2. liquidez maior que 200.000 por dia
-      3. tirar bancos e seguradoras
-      4. tirar empresas com recupera;cao judicial
-      5. earning yield - ev/ebit
+                         index: int, roic_index: dict, logger: logging.Logger) -> float:
+    """Returns stock earning yield.
+
+    :param symbol: Ticker symbol
+    :type symbol: str
+    :param tickers: tickers list
+    :type tickers: list
+    :param df: pandas data frame to be filled
+    :type df: DataFrame
+    :param index: df index
+    :type index: int
+    :param roic_index: dictionary with the roic information
+    :type roic_index: dict
+    :param logger: Logger object
+    :type logger: logging.Logger
+    :return: Earning yeld of the current stock
+    :rtype: float
     """
-    ticker_valid, ticker_info = ticker_is_valid(symbol, LOGGER)
+   
+    ticker_valid, ticker_info = ticker_is_valid(symbol, logger)
     if not ticker_valid:
         return False
 
@@ -172,7 +200,7 @@ def return_earning_yield(symbol: str, tickers: list, df: DataFrame,
     magic_index = earning_yield + roic_index_number
 
     if earning_yield > 0:
-        LOGGER.debug(f'Inserting ticker: {symbol} on dataframe')
+        logger.debug(f'Inserting ticker: {symbol} on dataframe')
 
         df.loc[str(index)] = [
             symbol[:-3], magic_index, earning_yield, roic_index_number, roic,
@@ -189,6 +217,9 @@ def get_ibrx_info(url: str) -> set:
     """Returns set with IRX100 index
 
     :param url: status invest url
+    :type url: str 
+    :param logger: Logger object
+    :type logger: logging.Logger
     :return: set with IRX100 index
     :rtype: set
     """
@@ -204,6 +235,8 @@ def get_ibrx_info(url: str) -> set:
 def get_ticker_roic_info(URL: str) -> dict:
     """Returns ibrx100 index informations
 
+    :param url: status invest url
+    :type url: str 
     :return: Dictionary with ibrx100 index informations
     :rtype: dict
     """
