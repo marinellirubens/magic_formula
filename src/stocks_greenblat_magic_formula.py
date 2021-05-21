@@ -81,7 +81,7 @@ def set_logger(logger: logging.Logger, log_file_name: str = 'stocks.log') -> log
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - (%(threadName)-10s) - %(levelname)s - %(message)s')
     handler = logging.handlers.RotatingFileHandler(log_file_name, maxBytes=1024 * 1000,
-                                                   backupCount=10)  # , delay=False)
+                                                   backupCount=10)
     buff_handler = logging.StreamHandler(sys.stdout)
 
     handler.setFormatter(formatter)
@@ -122,17 +122,11 @@ def ticker_is_valid(symbol: str, logger: logging.Logger) -> Tuple[bool, namedtup
             ['strongBuy', 'buy', 'sell', 'strongSell']].sum()
         recommendation_trend = (strongBuy + buy), (sell + strongSell)
     except TypeError as error:
-        # print(ticker.recommendation_trend)
         logger.error(f'TypeError on ticker: {symbol}: {error}')
-        # return False, tuple()
         recommendation_trend = (0, 0)
 
     if ticker.asset_profile[symbol]['industry'] in ['Insurance—Diversified', 'Banks—Regional']:
         return False, tuple()
-
-    #regular_market_volume = ticker_price.get('regularMarketVolume', 0)
-    #if regular_market_volume < 100_000:
-    #    return False, tuple()
 
     ebit = all_modules['incomeStatementHistory']['incomeStatementHistory'][0]['ebit']
     if ebit <= 0:
