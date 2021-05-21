@@ -1,0 +1,1 @@
+python src\stocks_greenblat_magic_formula.py

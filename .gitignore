@@ -1,0 +1,9 @@
+*.pyc
+*.log
+*.log.*
+*__pycache__*
+*.pytest_cache*
+*.vscode*
+.venv
+*.xlsx
+xlsx_files
