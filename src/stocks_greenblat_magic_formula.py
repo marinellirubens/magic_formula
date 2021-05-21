@@ -3,20 +3,18 @@ import datetime
 import json
 import logging
 import logging.handlers
-import sys
 import os
+import sys
 import threading
 from collections import namedtuple
 from typing import Tuple
 
 import bs4
-import numpy
-# import openpyxl
+import numpy as np
 import pandas
-from pandas import DataFrame
 import requests
 import yahooquery
-import numpy as np
+from pandas import DataFrame
 
 
 LOGGER = logging.getLogger(__name__)
