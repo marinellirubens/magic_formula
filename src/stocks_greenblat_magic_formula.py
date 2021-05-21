@@ -172,8 +172,7 @@ def return_earning_yield(symbol: str, tickers: list, df: DataFrame,
 
     shares_outstanding = ticker_info.key_statistics.get('sharesOutstanding', 0)
     if shares_outstanding == 0:
-        shares_outstanding = ticker_info.key_statistics.get(
-            'impliedSharesOutstanding', 0)
+        shares_outstanding = ticker_info.key_statistics.get('impliedSharesOutstanding', 0)
 
     total_stockholder_equity_patrimonio_liquido = \
         ticker_info.balance_sheet['balanceSheetStatements'][0]['totalStockholderEquity']
@@ -228,16 +227,19 @@ def get_ticker_roic_info(url: str) -> dict:
     """
     tickers_info = requests.get(url).content
 
-    df = pandas.read_json(tickers_info)
-    df: pandas.DataFrame = df.sort_values('roic', ascending=False)
+    df: pandas.DataFrame = pandas.read_json(tickers_info)
+    df = df.sort_values('roic', ascending=False)
+    
     df['roic'] = df['roic'].replace(np.NaN, 0)
     df['roic_index'] = [x for x, y in enumerate(df['roic'].iteritems())]
+    
     df = df[['ticker', 'roic_index', 'roic']]
     df.set_index(['ticker'], inplace=True)
     df.to_excel(
         excel_writer=f'{XLSX_PATH}roic_info_{datetime.datetime.now().strftime("%Y%m%d")}.xlsx',
         sheet_name='stocks', index=True, engine='openpyxl', freeze_panes=(1, 0),
     )
+    
     return df.to_dict('index')
 
 
