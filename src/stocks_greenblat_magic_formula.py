@@ -238,7 +238,7 @@ def get_ticker_roic_info(url: str) -> dict:
 
     df = pandas.read_json(tickers_info)
     df: pandas.DataFrame = df.sort_values('roic', ascending=False)
-    df['roic'] = df['roic'].replace(numpy.NaN, 0)
+    df['roic'] = df['roic'].replace(np.NaN, 0)
     df['roic_index'] = [x for x, y in enumerate(df['roic'].iteritems())]
     df = df[['ticker', 'roic_index', 'roic']]
     df.set_index(['ticker'], inplace=True)
