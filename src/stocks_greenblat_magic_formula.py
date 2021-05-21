@@ -17,21 +17,19 @@ import yahooquery
 from pandas import DataFrame
 
 
-LOGGER = logging.getLogger(__name__)
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 
 
-def main():
+def main(logger: logging.Logger = logging.getLogger(__name__)):
     """Main method """
-    global LOGGER
-    LOGGER = set_logger(LOGGER)
+    logger = set_logger(logger)
     config = get_config()
     roic_index_info = get_ticker_roic_info(config['STATUS_INVEST_URL'].format('"'))
-    stock_tickers = get_ibrx_info(config['BRX10_URL'])
+    stock_tickers = get_ibrx_info(config['BRX10_URL'], logger)
     tickers_df = process_tickers(stock_tickers, roic_index_info)
 
-    LOGGER.info('Sorting dataframe')
+    logger.info('Sorting dataframe')
     tickers_df = tickers_df.sort_values('roic', ascending=False)
     tickers_df['roic_index_number'] = np.arange(tickers_df['roic'].count())
     tickers_df = tickers_df.sort_values('earning_yield', ascending=True)
@@ -39,15 +37,9 @@ def main():
     tickers_df['magic_index'] = tickers_df['earning_yield_index'] + tickers_df['roic_index_number']
     tickers_df = tickers_df.sort_values('magic_index', ascending=True)
 
-    '''
-    #tickers_df = tickers_df[tickers_df['symbol'].isin(
-    #    [x[1] for x in tickers_df['symbol'].iteritems()][:21]
-    # )]
-    '''
-
     excel_file_name = f'{XLSX_PATH}stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}.xlsx'
 
-    LOGGER.info(f'Exporting data into excel {excel_file_name}')
+    logger.info(f'Exporting data into excel {excel_file_name}')
     tickers_df.to_excel(
         excel_writer=excel_file_name,
         sheet_name='stocks', index=False, engine='openpyxl', freeze_panes=(1, 0),
@@ -86,7 +78,7 @@ def set_logger(logger: logging.Logger, log_file_name: str = 'stocks.log') -> log
 
     handler.setFormatter(formatter)
     buff_handler.setFormatter(formatter)
-
+    
     logger.setLevel('DEBUG')
     logger.addHandler(handler)
     logger.addHandler(buff_handler)
@@ -207,7 +199,7 @@ def return_earning_yield(symbol: str, tickers: list, df: DataFrame,
     return earning_yield
 
 
-def get_ibrx_info(url: str) -> set:
+def get_ibrx_info(url: str, logger: logging.Logger) -> set:
     """Returns set with IRX100 index
 
     :param url: status invest url
@@ -217,12 +209,12 @@ def get_ibrx_info(url: str) -> set:
     :return: set with IRX100 index
     :rtype: set
     """
-    LOGGER.info(f'Processing url: {url}')
+    logger.info(f'Processing url: {url}')
     bs = bs4.BeautifulSoup(requests.get(
         url, verify=True).content, "html.parser")
     tickers_ibrx100 = set([x.text for x in list(
         bs.find_all("span", {"class": "ticker"}))])
-    LOGGER.info(f'Returned {len(tickers_ibrx100)} tickers')
+    logger.info(f'Returned {len(tickers_ibrx100)} tickers')
     return tickers_ibrx100
 
 
@@ -249,7 +241,7 @@ def get_ticker_roic_info(url: str) -> dict:
     return df.to_dict('index')
 
 
-def process_tickers(stock_tickers: set, roic_index: dict) -> DataFrame:
+def process_tickers(stock_tickers: set, roic_index: dict, logger: logging.Logger) -> DataFrame:
     """Process tickers informations and return a pandas Dataframe
 
     :param stock_tickers: List of the stock tickers
@@ -259,7 +251,7 @@ def process_tickers(stock_tickers: set, roic_index: dict) -> DataFrame:
     :return: Dataframe with the tickers and financial information
     :rtype: pandas.DataFrame
     """
-    LOGGER.info('Creating pandas Df')
+    logger.info('Creating pandas Df')
     df = pandas.DataFrame(
         columns=[
             'symbol', 'magic_index', 'earning_yield', 'roic_index_number',
@@ -272,7 +264,7 @@ def process_tickers(stock_tickers: set, roic_index: dict) -> DataFrame:
 
     tickers = []
     threads = []
-    LOGGER.info('Processing tickers')
+    logger.info('Processing tickers')
     for index, ticker in enumerate(stock_tickers):
         if len(threads) == MAX_NUMBER_THREADS:
             for thread in threads:
@@ -281,9 +273,9 @@ def process_tickers(stock_tickers: set, roic_index: dict) -> DataFrame:
 
         thread = threading.Thread(
             target=return_earning_yield,
-            args=(ticker + '.SA', tickers, df, index, roic_index, LOGGER, )
+            args=(ticker + '.SA', tickers, df, index, roic_index, logger, )
         )
-        LOGGER.info(f'Processing ticker: {ticker} on thread {thread}')
+        logger.info(f'Processing ticker: {ticker} on thread {thread}')
 
         thread.daemon = False
         thread.start()
@@ -293,4 +285,5 @@ def process_tickers(stock_tickers: set, roic_index: dict) -> DataFrame:
 
 
 if __name__ == '__main__':
-    main()
+    logger = logging.getLogger(__name__)
+    main(logger)
