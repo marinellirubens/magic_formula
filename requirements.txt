@@ -1,7 +1,7 @@
 pandas==1.2.4
 openpyxl==3.0.7
-yahooquery==2.2.15
-bs4==4.9.3
+yahooquery
+bs4
 requests==2.25.1
 numpy==1.20.2
 pytest==6.2.4
