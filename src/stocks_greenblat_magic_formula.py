@@ -101,7 +101,9 @@ def ticker_is_valid(symbol: str, logger: logging.Logger) -> Tuple[bool, namedtup
     ticker_info = namedtuple(
         'ticker_info',
         field_names=['financial_data', 'price', 'key_statistics',
-                     'balance_sheet', 'ebit', 'recommendation_trend'])
+                     'balance_sheet', 'ebit', 'recommendation_trend']
+    )
+    
     ticker = yahooquery.Ticker(symbol)
     all_modules = ticker.all_modules[symbol]
     if not isinstance(all_modules, dict):
@@ -109,9 +111,12 @@ def ticker_is_valid(symbol: str, logger: logging.Logger) -> Tuple[bool, namedtup
 
     financial_data = ticker.financial_data[symbol]
     ticker_price = all_modules.get('price', {})
+    
     try:
         strongBuy, buy, sell, strongSell = ticker.recommendation_trend[
-            ['strongBuy', 'buy', 'sell', 'strongSell']].sum()
+            ['strongBuy', 'buy', 'sell', 'strongSell']
+        ].sum()
+        
         recommendation_trend = (strongBuy + buy), (sell + strongSell)
     except TypeError as error:
         logger.error(f'TypeError on ticker: {symbol}: {error}')
@@ -209,11 +214,12 @@ def get_ibrx_info(url: str, logger: logging.Logger) -> set:
     :rtype: set
     """
     logger.info(f'Processing url: {url}')
-    bs = bs4.BeautifulSoup(requests.get(
-        url, verify=True).content, "html.parser")
-    tickers_ibrx100 = set([x.text for x in list(
-        bs.find_all("span", {"class": "ticker"}))])
+    
+    bs = bs4.BeautifulSoup(requests.get(url, verify=True).content, "html.parser")
+    tickers_ibrx100 = set([x.text for x in list(bs.find_all("span", {"class": "ticker"}))])
+    
     logger.info(f'Returned {len(tickers_ibrx100)} tickers')
+    
     return tickers_ibrx100
 
 
