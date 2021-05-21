@@ -226,7 +226,7 @@ def get_ibrx_info(url: str) -> set:
     return tickers_ibrx100
 
 
-def get_ticker_roic_info(URL: str) -> dict:
+def get_ticker_roic_info(url: str) -> dict:
     """Returns ibrx100 index informations
 
     :param url: status invest url
@@ -234,7 +234,7 @@ def get_ticker_roic_info(URL: str) -> dict:
     :return: Dictionary with ibrx100 index informations
     :rtype: dict
     """
-    tickers_info = requests.get(URL).content
+    tickers_info = requests.get(url).content
 
     df = pandas.read_json(tickers_info)
     df: pandas.DataFrame = df.sort_values('roic', ascending=False)
