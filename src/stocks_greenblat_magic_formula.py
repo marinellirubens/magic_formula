@@ -41,12 +41,6 @@ def main():
     tickers_df['magic_index'] = tickers_df['earning_yield_index'] + tickers_df['roic_index_number']
     tickers_df = tickers_df.sort_values('magic_index', ascending=True)
 
-    '''
-    #tickers_df = tickers_df[tickers_df['symbol'].isin(
-    #    [x[1] for x in tickers_df['symbol'].iteritems()][:21]
-    # )]
-    '''
-
     excel_file_name = f'{XLSX_PATH}stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}.xlsx'
 
     LOGGER.info(f'Exporting data into excel {excel_file_name}')
