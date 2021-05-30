@@ -26,13 +26,9 @@ class TesteGreenBlat(unittest.TestCase):
         logger_formated: logging.Logger = green.set_logger(logger)
         
         self.assertEqual(logger_formated.level, 10)
-        self.assertIsInstance(logger_formated.handlers[0],
-                              logging.handlers.RotatingFileHandler)
-        self.assertIsInstance(logger_formated.handlers[1],
-                              logging.StreamHandler)
+        self.assertIsInstance(logger_formated.handlers[0], logging.handlers.RotatingFileHandler)
+        self.assertIsInstance(logger_formated.handlers[1], logging.StreamHandler)
 
         format = '%(asctime)s - %(name)s - (%(threadName)-10s) - %(levelname)s - %(message)s'
         for handler in logger_formated.handlers:
-            self.assertEqual(handler.formatter._fmt,
-                            format)
-        
+            self.assertEqual(handler.formatter._fmt, format)
