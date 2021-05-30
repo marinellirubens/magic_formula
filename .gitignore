@@ -9,3 +9,4 @@
 xlsx_files
 .idea
 .coverage
+venv
