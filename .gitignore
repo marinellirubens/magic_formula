@@ -7,3 +7,5 @@
 .venv
 *.xlsx
 xlsx_files
+.idea
+.coverage
