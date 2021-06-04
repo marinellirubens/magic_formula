@@ -23,11 +23,14 @@ XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 
 def main(logger: logging.Logger = logging.getLogger(__name__)):
     """Main method """
+    if not os.path.exists(XLSX_PATH):
+        os.makedirs(XLSX_PATH)
+
     logger = set_logger(logger)
     config = get_config()
     roic_index_info = get_ticker_roic_info(config['STATUS_INVEST_URL'].format('"'))
     stock_tickers = get_ibrx_info(config['BRX10_URL'], logger)
-    tickers_df = process_tickers(stock_tickers, roic_index_info)
+    tickers_df = process_tickers(stock_tickers, roic_index_info, logger)
 
     logger.info('Sorting dataframe')
     tickers_df = tickers_df.sort_values('roic', ascending=False)
