@@ -1,1 +1,1 @@
-pytest tests -v
+pytest tests -v --cov=src --cov-report term-missing
