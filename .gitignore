@@ -8,5 +8,5 @@
 *.xlsx
 xlsx_files
 .idea
-.coverage
+*.coverage*
 venv
