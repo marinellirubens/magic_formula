@@ -49,3 +49,10 @@ class TestStocksGreenblatMagicFormula(unittest.TestCase):
         stock = green.get_ticker_info('ITSA4.SA', logger)
         self.assertIsInstance(stock, yahooquery.Ticker)
 
+    def test_get_ticker_info_assert_is_none(self):
+        logger = scenario_logger()
+        logger: logging.Logger = green.set_logger(logger)
+        
+        stock = green.get_ticker_info('ITSA4.SA', logger)
+        self.assertIsNotNone(stock)
+
