@@ -180,16 +180,8 @@ def ticker_is_valid(symbol: str, logger: logging.Logger) -> Tuple[bool, namedtup
 
     financial_data = ticker.financial_data[symbol]
     ticker_price = all_modules.get('price', {})
-    
-    try:
-        strongBuy, buy, sell, strongSell = ticker.recommendation_trend[
-            ['strongBuy', 'buy', 'sell', 'strongSell']
-        ].sum()
         
-        recommendation_trend = (strongBuy + buy), (sell + strongSell)
-    except TypeError as error:
-        logger.error(f'TypeError on ticker: {symbol}: {error}')
-        recommendation_trend = (0, 0)
+    recommendation_trend = get_recomendation_trend(ticker=ticker)
 
     if ticker.asset_profile[symbol]['industry'] in ['Insurance—Diversified', 'Banks—Regional']:
         return False, tuple()
