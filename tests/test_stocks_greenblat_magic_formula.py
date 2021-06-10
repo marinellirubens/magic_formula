@@ -59,3 +59,12 @@ class TestStocksGreenblatMagicFormula(unittest.TestCase):
     def test_get_ticker_data(self):
         pass
 
+    def test_get_recomendation_trend(self):
+        logger = scenario_logger()
+        logger: logging.Logger = green.set_logger(logger)
+
+        ticker = green.get_ticker_info('ITSA4.SA', logger)
+        recomendation_trend = green.get_recomendation_trend(ticker=ticker)
+
+        self.assertIsNotNone(recomendation_trend)
+        self.assertIsInstance(recomendation_trend, tuple)
