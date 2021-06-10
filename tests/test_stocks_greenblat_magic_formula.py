@@ -17,6 +17,12 @@ except:
 from src import stocks_greenblat_magic_formula as green
 from src.stocks_greenblat_magic_formula import logging
 
+
+def scenario_logger():
+    logger = logging.getLogger(__name__)
+    return logger
+
+
 class TestStocksGreenblatMagicFormula(unittest.TestCase):
     def test_get_config(self):
         config = green.get_config('tests/teste.json')
