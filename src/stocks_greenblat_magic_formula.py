@@ -89,6 +89,20 @@ def set_logger(logger: logging.Logger, log_file_name: str = 'stocks.log') -> log
     return logger
 
 
+def get_ticker_info(symbol: str, logger: logging.Logger) -> yahooquery.Ticker:
+    """Returns the ticker info
+
+    :param symbol: stock ticker
+    :type symbol: str
+    :param logger: Logger object
+    :type logger: logging.Logger
+    :return: Ticker info
+    :rtype: yahooquery.Ticker
+    """
+    ticker = yahooquery.Ticker(symbol)
+    return ticker
+
+
 def ticker_is_valid(symbol: str, logger: logging.Logger) -> Tuple[bool, namedtuple]:
     """Verify if the ticker is valid for the formula
 
