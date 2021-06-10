@@ -41,3 +41,11 @@ class TestStocksGreenblatMagicFormula(unittest.TestCase):
         format = '%(asctime)s - %(name)s - (%(threadName)-10s) - %(levelname)s - %(message)s'
         for handler in logger_formated.handlers:
             self.assertEqual(handler.formatter._fmt, format)
+
+    def test_get_ticker_info_assert_is_dict(self):
+        logger = scenario_logger()
+        logger: logging.Logger = green.set_logger(logger)
+        
+        stock = green.get_ticker_info('ITSA4.SA', logger)
+        self.assertIsInstance(stock, yahooquery.Ticker)
+
