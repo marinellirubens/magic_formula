@@ -3,6 +3,9 @@ from __future__ import absolute_import
 import os
 import sys
 import unittest
+import logging
+from unittest import mock
+import yahooquery
 
 try:
     sys.path.append(
