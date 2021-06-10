@@ -31,7 +31,7 @@ class TestStocksGreenblatMagicFormula(unittest.TestCase):
         self.assertEqual(config['BRX10_URL'], 'https://statusinvest.com.br/indices/indice-brasil-100')
         
     def test_set_logger(self):
-        logger = logging.getLogger(__name__)
+        logger = scenario_logger()
         logger_formated: logging.Logger = green.set_logger(logger)
         
         self.assertEqual(logger_formated.level, 10)
