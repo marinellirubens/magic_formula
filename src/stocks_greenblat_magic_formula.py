@@ -103,6 +103,36 @@ def get_ticker_info(symbol: str, logger: logging.Logger) -> yahooquery.Ticker:
     return ticker
 
 
+def get_ticker_data(symbol: str, ticker: yahooquery.Ticker) -> Tuple[bool, namedtuple]:
+    """Gets ticker data from the Ticker object
+
+    :param symbol: Symbol from the ticker object
+    :type symbol: str
+    :param ticker: Ticker object
+    :type ticker: yahooquery.Ticker
+    :return: Returns a named tuple with the information from the ticker
+    :rtype: Tuple[bool, namedtuple]
+    """
+    ticker_info = namedtuple(
+        'ticker_info',
+        field_names=['financial_data', 'price', 'key_statistics',
+                     'balance_sheet', 'ebit', 'recommendation_trend']
+    )
+
+    all_modules = ticker.all_modules[symbol]
+    financial_data = ticker.financial_data[symbol]
+    ticker_price = all_modules.get('price', {})
+    recommendation_trend = get_recomendation_trend(ticker=ticker)
+
+    ebit = all_modules['incomeStatementHistory']['incomeStatementHistory'][0]['ebit']
+    key_statistics = all_modules['defaultKeyStatistics']
+    balance_sheet = all_modules['balanceSheetHistory']
+
+    ticker_tuple = ticker_info(financial_data, ticker_price,
+                               key_statistics, balance_sheet, ebit,
+                               recommendation_trend)
+    return ticker_tuple
+
 
 def get_recomendation_trend(ticker: yahooquery.Ticker) -> tuple:
     """Returns a tuple with the information of the number of recomendations for buy and sell
