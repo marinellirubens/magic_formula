@@ -103,6 +103,27 @@ def get_ticker_info(symbol: str, logger: logging.Logger) -> yahooquery.Ticker:
     return ticker
 
 
+
+def get_recomendation_trend(ticker: yahooquery.Ticker) -> tuple:
+    """Returns a tuple with the information of the number of recomendations for buy and sell
+
+    :param ticker: Ticker object
+    :type ticker: yahooquery.Ticker
+    :return: Tuple with the recomendation trend
+    :rtype: tuple
+    """
+    try:
+        strongBuy, buy, sell, strongSell = ticker.recommendation_trend[
+            ['strongBuy', 'buy', 'sell', 'strongSell']
+        ].sum()
+        
+        recommendation_trend = (strongBuy + buy), (sell + strongSell)
+    except TypeError:
+        recommendation_trend = (0, 0)
+
+    return recommendation_trend
+
+
 def ticker_is_valid(symbol: str, logger: logging.Logger) -> Tuple[bool, namedtuple]:
     """Verify if the ticker is valid for the formula
 
