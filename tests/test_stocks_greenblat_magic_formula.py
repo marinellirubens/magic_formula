@@ -56,3 +56,6 @@ class TestStocksGreenblatMagicFormula(unittest.TestCase):
         stock = green.get_ticker_info('ITSA4.SA', logger)
         self.assertIsNotNone(stock)
 
+    def test_get_ticker_data(self):
+        pass
+
