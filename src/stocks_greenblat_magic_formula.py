@@ -164,6 +164,7 @@ def ticker_is_valid(symbol: str, logger: logging.Logger) -> Tuple[bool, namedtup
     :return: Tuple with the boolean defining if is valid, and the informations for the stock
     :rtype: Tuple[bool, namedtuple]
     """
+    # TODO: change this function into small functions
     logger.debug(f'Validating ticker: {symbol}')
     
     ticker_info = namedtuple(
