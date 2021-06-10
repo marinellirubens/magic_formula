@@ -173,7 +173,7 @@ def ticker_is_valid(symbol: str, logger: logging.Logger) -> Tuple[bool, namedtup
                      'balance_sheet', 'ebit', 'recommendation_trend']
     )
     
-    ticker = yahooquery.Ticker(symbol)
+    ticker = get_ticker_info(symbol, logger)
     all_modules = ticker.all_modules[symbol]
     if not isinstance(all_modules, dict):
         return False, tuple()
