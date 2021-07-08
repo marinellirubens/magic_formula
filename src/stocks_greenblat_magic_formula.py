@@ -364,6 +364,11 @@ def process_tickers(stock_tickers: set, roic_index: dict, logger: logging.Logger
         thread.start()
         threads.append(thread)
 
+    if threads:
+        for thread in threads:
+            thread.join()
+        threads = []
+
     return df
 
 
