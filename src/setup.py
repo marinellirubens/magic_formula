@@ -18,7 +18,7 @@ def get_config(config_file: str = os.path.join(os.path.dirname(__file__), 'confi
     return config
 
 
-def set_logger(logger: logging.Logger, log_file_name: str = 'stocks.log') -> logging.Logger:
+def set_logger(logger: logging.Logger = logging.Logger(__name__), log_file_name: str = 'stocks.log') -> logging.Logger:
     """Sets the logger configuration
 
     :param logger: Logger variable
