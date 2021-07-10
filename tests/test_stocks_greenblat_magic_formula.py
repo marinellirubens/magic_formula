@@ -9,7 +9,7 @@ import yahooquery
 
 try:
     sys.path.append(
-        os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        os.path.abspath(os.path.join(os.path.dirname(__file__), '../src'))
     )
 except:
     raise
