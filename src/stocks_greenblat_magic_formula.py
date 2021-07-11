@@ -14,24 +14,22 @@
 
 
 import datetime
-import json
 import logging
 import logging.handlers
 import os
-import sys
 import threading
 from collections import namedtuple
 from typing import Tuple
 
-import bs4
 import numpy as np
 import pandas
-import requests
 import yahooquery
 from pandas import DataFrame
 
 from setup import get_config
 from setup import set_logger
+from status_invest import get_ticker_roic_info, get_ibrx_info
+
 
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
