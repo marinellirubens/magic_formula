@@ -16,7 +16,7 @@ TICKER_INFO = namedtuple(
 class MagicFormula():
     def __init__(self, symbol: str, logger: logging.Logger) -> None:
         self.symbol = symbol
-        self.logger = logging.Logger
+        self.logger = logger
         self.ticker_info = None
 
     def get_ticker_info(self) -> yahooquery.Ticker:
