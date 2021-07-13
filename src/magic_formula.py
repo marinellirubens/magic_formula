@@ -54,9 +54,8 @@ class MagicFormula():
         if not self.valid_ebit():
             return False
 
-        self.key_statistics = self.all_modules['defaultKeyStatistics']
-        self.balance_sheet = self.all_modules['balanceSheetHistory']
-        
+        self.fill_key_statistics()
+        self.fill_balance_sheet()
         self.fill_ticker_info()
 
         return True
