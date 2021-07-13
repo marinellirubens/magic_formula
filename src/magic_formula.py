@@ -1,4 +1,5 @@
-"""Module to contain the magic formula class to segregate the validation methods"""
+"""Module to contain the magic formula class to segregate
+the validation methods"""
 
 import logging
 from collections import namedtuple
@@ -8,7 +9,7 @@ import yahooquery
 TICKER_INFO = namedtuple(
     'ticker_info',
     field_names=['financial_data', 'price', 'key_statistics',
-                'balance_sheet', 'ebit', 'recommendation_trend']
+                 'balance_sheet', 'ebit', 'recommendation_trend']
 )
 
 
@@ -21,8 +22,6 @@ class MagicFormula():
     def get_ticker_info(self) -> yahooquery.Ticker:
         """Returns the ticker info
 
-        :param symbol: stock ticker
-        :type symbol: str
         :return: Ticker info
         :rtype: yahooquery.Ticker
         """
@@ -47,7 +46,7 @@ class MagicFormula():
         """
         if not self.valid_information_dict():
             return False
-        
+
         self.get_recomendation_trend()
 
         if not self.valid_industry():
@@ -71,7 +70,8 @@ class MagicFormula():
         self.balance_sheet = self.all_modules['balanceSheetHistory']
 
     def fill_ticker_info(self) -> None:
-        """Fills the variable ticker_info with a namedTuple from the type TICKER_INFO"""
+        """Fills the variable ticker_info with a namedTuple
+        from the type TICKER_INFO"""
         self.ticker_info = TICKER_INFO(
             self.financial_data, self.ticker_price,
             self.key_statistics, self.balance_sheet, self.ebit,
@@ -85,7 +85,8 @@ class MagicFormula():
                 'incomeStatementHistory']['incomeStatementHistory'][0]['ebit']
 
     def get_recomendation_trend(self) -> tuple:
-        """Returns a tuple with the information of the number of recomendations for buy and sell
+        """Returns a tuple with the information of the number of
+        recomendations for buy and sell
 
         :param ticker: Ticker object
         :type ticker: yahooquery.Ticker
@@ -93,10 +94,11 @@ class MagicFormula():
         :rtype: tuple
         """
         try:
-            strongBuy, buy, sell, strongSell = self.ticker.recommendation_trend[
-                ['strongBuy', 'buy', 'sell', 'strongSell']
-            ].sum()
-            
+            strongBuy, buy, sell, strongSell = \
+                self.ticker.recommendation_trend[
+                    ['strongBuy', 'buy', 'sell', 'strongSell']
+                ].sum()
+
             self.recommendation_trend = (strongBuy + buy), (sell + strongSell)
         except TypeError:
             self.recommendation_trend = (0, 0)
@@ -118,7 +120,8 @@ class MagicFormula():
         return isinstance(self.all_modules, dict)
 
     def valid_industry(self) -> bool:
-        """Validates if the industry of the company is valid for this method of calculation
+        """Validates if the industry of the company is valid
+        for this method of calculation
 
         :return: Boolean with the result of the validation
         :rtype: bool
