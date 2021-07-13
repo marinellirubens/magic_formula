@@ -62,14 +62,16 @@ class MagicFormula():
 
         return True
 
-    def fill_ticker_info(self):
+    def fill_ticker_info(self) -> None:
+        """Fills the variable ticker_info with a namedTuple from the type TICKER_INFO"""
         self.ticker_info = TICKER_INFO(
             self.financial_data, self.ticker_price,
             self.key_statistics, self.balance_sheet, self.ebit,
             self.recommendation_trend
         )
 
-    def get_ebit(self):
+    def get_ebit(self) -> None:
+        """Fill the variable ebit with information from the dict all_modules"""
         self.ebit = self.all_modules['incomeStatementHistory']['incomeStatementHistory'][0]['ebit']
 
     def get_recomendation_trend(self) -> tuple:
@@ -89,17 +91,42 @@ class MagicFormula():
         except TypeError:
             self.recommendation_trend = (0, 0)
 
-    def valid_ticker_info(self):
+    def valid_ticker_info(self) -> bool:
+        """Validates if the variable ticker_info has informations
+
+        :return: Boolean with the result of the validation
+        :rtype: bool
+        """
         return self.ticker_info is not None
 
-    def valid_information_dict(self):
+    def valid_information_dict(self) -> bool:
+        """Validates if the variable all_modules is an instance of dict
+
+        :return: Boolean with the result of the validation
+        :rtype: bool
+        """
         return isinstance(self.all_modules, dict)
 
-    def valid_industry(self):
+    def valid_industry(self) -> bool:
+        """Validates if the industry of the company is valid for this method of calculation
+
+        :return: Boolean with the result of the validation
+        :rtype: bool
+        """
         return self.asset_profile[self.symbol]['industry'] not in ['Insurance—Diversified', 'Banks—Regional']
 
-    def valid_ebit(self):
+    def valid_ebit(self) -> bool:
+        """Validates if the variable ebit is valid
+
+        :return: Boolean with the result of the validation
+        :rtype: bool
+        """
         return self.ebit > 0
 
-    def valid_market_cap(self):
+    def valid_market_cap(self) -> bool:
+        """Validates if the variable ticker_proce is valid
+
+        :return: Boolean with the result of the validation
+        :rtype: bool
+        """
         return self.ticker_price.get('marketCap', 0) > 0
