@@ -65,6 +65,10 @@ class MagicFormula():
         """Fill key statistics variable"""
         self.key_statistics = self.all_modules['defaultKeyStatistics']
 
+    def fill_balance_sheet(self):
+        """Fill key balance_sheet variable"""
+        self.balance_sheet = self.all_modules['balanceSheetHistory']
+
     def fill_ticker_info(self) -> None:
         """Fills the variable ticker_info with a namedTuple from the type TICKER_INFO"""
         self.ticker_info = TICKER_INFO(
