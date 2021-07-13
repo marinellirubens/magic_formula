@@ -28,6 +28,7 @@ class MagicFormula():
         :rtype: yahooquery.Ticker
         """
         self.ticker: yahooquery.Ticker = yahooquery.Ticker(self.symbol)
+        self.all_modules = self.ticker.all_modules[self.symbol]
         return self.ticker
 
     def get_ticker_data(self) -> bool:
@@ -40,7 +41,6 @@ class MagicFormula():
         :return: Returns a named tuple with the information from the ticker
         :rtype: Tuple[bool, namedtuple]
         """
-        self.all_modules = self.ticker.all_modules[self.symbol]
         if not self.valid_information_dict():
             return False
         
@@ -113,7 +113,7 @@ class MagicFormula():
         :return: Boolean with the result of the validation
         :rtype: bool
         """
-        return self.asset_profile[self.symbol]['industry'] not in ['Insurance—Diversified', 'Banks—Regional']
+        return self.ticker.asset_profile[self.symbol]['industry'] not in ['Insurance—Diversified', 'Banks—Regional']
 
     def valid_ebit(self) -> bool:
         """Validates if the variable ebit is valid
