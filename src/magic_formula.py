@@ -6,26 +6,31 @@ from typing import Tuple
 import logging
 
 
+TICKER_INFO = namedtuple(
+    'ticker_info',
+    field_names=['financial_data', 'price', 'key_statistics',
+                'balance_sheet', 'ebit', 'recommendation_trend']
+)
+
+
 class MagicFormula():
-    def __init__(self) -> None:
-        pass
+    def __init__(self, symbol: str, logger: logging.Logger) -> None:
+        self.symbol = symbol
+        self.logger = logging.Logger
+        self.ticker_info = None
 
-
-    def get_ticker_info(self, symbol: str, logger: logging.Logger) -> yahooquery.Ticker:
+    def get_ticker_info(self) -> yahooquery.Ticker:
         """Returns the ticker info
 
         :param symbol: stock ticker
         :type symbol: str
-        :param logger: Logger object
-        :type logger: logging.Logger
         :return: Ticker info
         :rtype: yahooquery.Ticker
         """
-        self.ticker = yahooquery.Ticker(symbol)
+        self.ticker: yahooquery.Ticker = yahooquery.Ticker(self.symbol)
         return self.ticker
 
-
-    def get_ticker_data(self, symbol: str, ticker: yahooquery.Ticker) -> Tuple[bool, namedtuple]:
+    def get_ticker_data(self) -> bool:
         """Gets ticker data from the Ticker object
 
         :param symbol: Symbol from the ticker object
@@ -35,28 +40,39 @@ class MagicFormula():
         :return: Returns a named tuple with the information from the ticker
         :rtype: Tuple[bool, namedtuple]
         """
-        ticker_info = namedtuple(
-            'ticker_info',
-            field_names=['financial_data', 'price', 'key_statistics',
-                        'balance_sheet', 'ebit', 'recommendation_trend']
+        self.all_modules = self.ticker.all_modules[self.symbol]
+        if not self.valid_information_dict():
+            return False
+        
+        self.financial_data = self.ticker.financial_data[self.symbol]
+        self.ticker_price = self.all_modules.get('price', {})
+        self.get_recomendation_trend()
+
+        if not self.valid_industry():
+            return False
+
+        self.get_ebit()
+        if not self.valid_ebit():
+            return False
+
+        self.key_statistics = self.all_modules['defaultKeyStatistics']
+        self.balance_sheet = self.all_modules['balanceSheetHistory']
+        
+        self.fill_ticker_info()
+
+        return True
+
+    def fill_ticker_info(self):
+        self.ticker_info = TICKER_INFO(
+            self.financial_data, self.ticker_price,
+            self.key_statistics, self.balance_sheet, self.ebit,
+            self.recommendation_trend
         )
 
-        all_modules = ticker.all_modules[symbol]
-        financial_data = ticker.financial_data[symbol]
-        ticker_price = all_modules.get('price', {})
-        recommendation_trend = self.get_recomendation_trend(ticker=ticker)
+    def get_ebit(self):
+        self.ebit = self.all_modules['incomeStatementHistory']['incomeStatementHistory'][0]['ebit']
 
-        ebit = all_modules['incomeStatementHistory']['incomeStatementHistory'][0]['ebit']
-        key_statistics = all_modules['defaultKeyStatistics']
-        balance_sheet = all_modules['balanceSheetHistory']
-
-        ticker_tuple = ticker_info(financial_data, ticker_price,
-                                key_statistics, balance_sheet, ebit,
-                                recommendation_trend)
-        return ticker_tuple
-
-
-    def get_recomendation_trend(self, ticker: yahooquery.Ticker) -> tuple:
+    def get_recomendation_trend(self) -> tuple:
         """Returns a tuple with the information of the number of recomendations for buy and sell
 
         :param ticker: Ticker object
@@ -65,63 +81,25 @@ class MagicFormula():
         :rtype: tuple
         """
         try:
-            strongBuy, buy, sell, strongSell = ticker.recommendation_trend[
+            strongBuy, buy, sell, strongSell = self.ticker.recommendation_trend[
                 ['strongBuy', 'buy', 'sell', 'strongSell']
             ].sum()
             
-            recommendation_trend = (strongBuy + buy), (sell + strongSell)
+            self.recommendation_trend = (strongBuy + buy), (sell + strongSell)
         except TypeError:
-            recommendation_trend = (0, 0)
+            self.recommendation_trend = (0, 0)
 
-        return recommendation_trend
+    def valid_ticker_info(self):
+        return self.ticker_info is not None
 
+    def valid_information_dict(self):
+        return isinstance(self.all_modules, dict)
 
-    def ticker_is_valid(self, symbol: str, logger: logging.Logger) -> Tuple[bool, namedtuple]:
-        """Verify if the ticker is valid for the formula
+    def valid_industry(self):
+        return self.asset_profile[self.symbol]['industry'] not in ['Insurance—Diversified', 'Banks—Regional']
 
-        :param symbol: Ticker symbol
-        :type symbol: str
-        :param logger: Logger object
-        :type logger: logging.Logger
-        :return: Tuple with the boolean defining if is valid, and the informations for the stock
-        :rtype: Tuple[bool, namedtuple]
-        """
-        # TODO: change this function into small functions
-        logger.debug(f'Validating ticker: {symbol}')
-        
-        ticker_info = namedtuple(
-            'ticker_info',
-            field_names=['financial_data', 'price', 'key_statistics',
-                        'balance_sheet', 'ebit', 'recommendation_trend']
-        )
-        
-        ticker = self.get_ticker_info(symbol, logger)
-        all_modules = ticker.all_modules[symbol]
-        if not isinstance(all_modules, dict):
-            return False, tuple()
+    def valid_ebit(self):
+        return self.ebit > 0
 
-        financial_data = ticker.financial_data[symbol]
-        ticker_price = all_modules.get('price', {})
-            
-        recommendation_trend = self.get_recomendation_trend(ticker=ticker)
-
-        if ticker.asset_profile[symbol]['industry'] in ['Insurance—Diversified', 'Banks—Regional']:
-            return False, tuple()
-
-        ebit = all_modules['incomeStatementHistory']['incomeStatementHistory'][0]['ebit']
-        if ebit <= 0:
-            return False, tuple()
-
-        market_cap = ticker_price.get('marketCap', 0)
-        if market_cap <= 0:
-            return False, tuple()
-
-        key_statistics = all_modules['defaultKeyStatistics']
-        balance_sheet = all_modules['balanceSheetHistory']
-
-        logger.debug(f'Ticker: {symbol} validated and its Valid.')
-        
-        return True, ticker_info(financial_data, ticker_price,
-                                key_statistics, balance_sheet, ebit,
-                                recommendation_trend)
-
+    def valid_market_cap(self):
+        return self.ticker_price.get('marketCap', 0) > 0
