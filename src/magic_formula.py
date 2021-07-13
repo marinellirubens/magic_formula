@@ -28,6 +28,11 @@ class MagicFormula():
         """
         self.ticker: yahooquery.Ticker = yahooquery.Ticker(self.symbol)
         self.all_modules = self.ticker.all_modules[self.symbol]
+        self.financial_data = self.ticker.financial_data[self.symbol]
+        self.ticker_price = self.all_modules.get('price', {})
+        self.industry = self.ticker.asset_profile[self.symbol]['industry']
+        self.fill_ebit()
+
         return self.ticker
 
     def get_ticker_data(self) -> bool:
@@ -43,14 +48,11 @@ class MagicFormula():
         if not self.valid_information_dict():
             return False
         
-        self.financial_data = self.ticker.financial_data[self.symbol]
-        self.ticker_price = self.all_modules.get('price', {})
         self.get_recomendation_trend()
 
         if not self.valid_industry():
             return False
 
-        self.get_ebit()
         if not self.valid_ebit():
             return False
 
@@ -76,9 +78,11 @@ class MagicFormula():
             self.recommendation_trend
         )
 
-    def get_ebit(self) -> None:
+    def fill_ebit(self) -> None:
         """Fill the variable ebit with information from the dict all_modules"""
-        self.ebit = self.all_modules['incomeStatementHistory']['incomeStatementHistory'][0]['ebit']
+        self.ebit = \
+            self.all_modules[
+                'incomeStatementHistory']['incomeStatementHistory'][0]['ebit']
 
     def get_recomendation_trend(self) -> tuple:
         """Returns a tuple with the information of the number of recomendations for buy and sell
@@ -119,7 +123,7 @@ class MagicFormula():
         :return: Boolean with the result of the validation
         :rtype: bool
         """
-        return self.ticker.asset_profile[self.symbol]['industry'] not in ['Insurance—Diversified', 'Banks—Regional']
+        return self.industry not in ['Insurance—Diversified', 'Banks—Regional']
 
     def valid_ebit(self) -> bool:
         """Validates if the variable ebit is valid
