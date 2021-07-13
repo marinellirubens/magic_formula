@@ -4,7 +4,7 @@ import sys
 import unittest
 import logging
 import yahooquery
-import pytest
+
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
