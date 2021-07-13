@@ -27,6 +27,9 @@ class MagicFormula():
         """
         self.ticker: yahooquery.Ticker = yahooquery.Ticker(self.symbol)
         self.all_modules = self.ticker.all_modules[self.symbol]
+        if not self.valid_information_dict():
+            return None
+
         self.financial_data = self.ticker.financial_data[self.symbol]
         self.ticker_price = self.all_modules.get('price', {})
         self.industry = self.ticker.asset_profile[self.symbol]['industry']
@@ -58,6 +61,18 @@ class MagicFormula():
         self.fill_key_statistics()
         self.fill_balance_sheet()
         self.fill_ticker_info()
+        if not self.valid_ticker_info():
+            return False
+
+        self.fill_total_cash()
+        self.fill_current_price()
+        self.fill_total_debt()
+        self.fill_market_cap()
+        self.fill_long_name()
+        self.fill_short_name()
+        self.fill_regular_market_time()
+        self.fill_shares_outstanding()
+        self.fill_total_stockholder_equity()
 
         return True
 
@@ -112,7 +127,10 @@ class MagicFormula():
         return self.ticker_info is not None
 
     def valid_information_dict(self) -> bool:
-        """Validates if the variable all_modules is an instance of dict
+        """Validates if the variable ticker_info has informations
+
+        :return: Boolean with the result of the validation
+        :rtype: boolvalid_information_dictan instance of dict
 
         :return: Boolean with the result of the validation
         :rtype: bool
@@ -142,4 +160,48 @@ class MagicFormula():
         :return: Boolean with the result of the validation
         :rtype: bool
         """
-        return self.ticker_price.get('marketCap', 0) > 0
+        return self.market_cap > 0
+
+    def fill_market_cap(self):
+        """Fills variable market_cap"""
+        # TODO: Create test
+        self.market_cap = self.ticker_price.get('marketCap', 0)
+
+    def fill_total_cash(self):
+        self.total_cash = self.financial_data['totalCash']
+
+    def fill_current_price(self):
+        self.current_price = self.financial_data['currentPrice']
+
+    def fill_total_debt(self):
+        self.total_debt = self.financial_data['totalDebt']
+
+    def fill_long_name(self):
+        self.long_name = self.ticker_price.get('longName', '')
+
+    def fill_short_name(self):
+        self.short_name = self.ticker_price.get('shortName', '')
+
+    def fill_regular_market_time(self):
+        self.regular_market_time = \
+            self.ticker_price.get('regularMarketTime', 0)
+
+    def fill_shares_outstanding(self):
+        self.shares_outstanding = \
+            self.key_statistics.get(
+                'sharesOutstanding',
+                self.key_statistics.get('impliedSharesOutstanding', 0)
+            )
+
+    def fill_total_stockholder_equity(self):
+        self.total_stockholder_equity = \
+            self.ticker_info.balance_sheet[
+                'balanceSheetStatements'
+            ][0]['totalStockholderEquity']
+
+    def calculate_tev(self):
+        self.tev = self.total_stockholder_equity + self.total_debt
+        return self.tev
+
+    def calculate_earning_yield(self):
+        return round((self.tev / self.ebit), 2)

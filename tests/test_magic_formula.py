@@ -88,6 +88,7 @@ class TestMagicFormula(unittest.TestCase):
     def test_valid_market_cap(self):
         wege = MagicFormula('WEGE3.SA', self.logger)
         wege.get_ticker_info()
+        wege.fill_market_cap()
         return_ = wege.valid_market_cap()
 
         self.assertIsNotNone(return_)
@@ -170,4 +171,11 @@ class TestMagicFormula(unittest.TestCase):
         return_ = wege.get_ticker_data()
 
         self.assertIsNotNone(return_)
+        self.assertFalse(return_)
+
+    def test_get_ticker_info_valid_information_dict_false(self):
+        wege = MagicFormula('DTEX3.SA', self.logger)
+        return_ = wege.get_ticker_info()
+
+        self.assertIsNone(return_)
         self.assertFalse(return_)
