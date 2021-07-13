@@ -1,10 +1,10 @@
 """Module to contain the magic formula class to segregate the validation methods"""
 
-import yahooquery
-from collections import namedtuple
-from typing import Tuple
 import logging
+from collections import namedtuple
+from copy import deepcopy
 
+import yahooquery
 
 TICKER_INFO = namedtuple(
     'ticker_info',
