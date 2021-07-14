@@ -56,8 +56,15 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     tickers_df['magic_index'] = \
         tickers_df['earning_yield_index'] + tickers_df['roic_index_number']
 
-    tickers_df = tickers_df.sort_values('magic_index', ascending=True)
+def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logger) -> None:
+    """Exportts the ticker dataframe into an excel file
 
+    :param tickers_df: Dataframe with the stocks information
+    :type tickers_df: pandas.DataFrame
+    :param logger: Logger object
+    :type logger: logging.Logger
+    :return: None
+    """
     excel_file_name = \
         f'{XLSX_PATH}stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}.xlsx'
 
