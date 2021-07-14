@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+<title>IBRX | &#xCD;ndice Brasil 100 - Status Invest</title>
+<body style="padding-top: 60px;">
+<span class="ticker">PETR3</span>
+<div class="w-100">
+PETROLEO BRASILEIRO S.A. PETROBRAS
+</div>
+</div>
+</a>
+<a role="cell" title="Setor da empresa" class="d-block w-30 pb-1 pt-1 text-main waves-effect waves-on-white-bg  pl-1" href="/acoes/setor/6/petroleo-gas-e-biocombustiveis/35/petroleo-gas-e-biocombustiveis">
+Petr&#xF3;leo. G&#xE1;s e Biocombust&#xED;veis
+</a>
+<div role="cell" title="Quantidade teórica do ativo dentro do índice" class="quantity w-15 text-right pr-2">
+3.684.060.179 </div>
+<div role="cell" title="Participação em porcentagem do ativo dentro do índice" class="percentual w-15 text-right ">
+<strong class="fw-700">3,882%</strong>
+</div>
+</div>
+<div role="row" class="item  d-flex justify-between align-items-center ">
+<div role="cell" title="Nº de referência" class="position">
+<span>6</span>
+</div>
+<a role="cell" title="Nome da empresa" class="company w-40 pl-1  pb-1 pt-1 waves-effect waves-on-white-bg" href="/acoes/b3sa3">
+<div class="d-flex justify-between align-items-center">
+<div class="">
+<div class="avatar" style="background-image:url(https://cdn-statusinvest.azureedge.net/img/company/avatar/367.jpg)">
+</div>
+</div>
+<span class="ticker">B3SA3</span>
+<div class="w-100">
+B3
+</div>
+</div>
+</a>
+<a role="cell" title="Setor da empresa" class="d-block w-30 pb-1 pt-1 text-main waves-effect waves-on-white-bg  pl-1" href="/acoes/setor/4/financeiro-e-outros/28/servicos-financeiros-diversos">
+Servi&#xE7;os Financeiros Diversos
+</a>
+<div role="cell" title="Quantidade teórica do ativo dentro do índice" class="quantity w-15 text-right pr-2">
+6.119.434.194 </div>
+<div role="cell" title="Participação em porcentagem do ativo dentro do índice" class="percentual w-15 text-right ">
+<strong class="fw-700">3,698%</strong>
+</div>
+</div>
+
+</html>
