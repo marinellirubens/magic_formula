@@ -45,16 +45,10 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     )
     stock_tickers = get_ibrx_info(config['BRX10_URL'], logger)
     tickers_df = process_tickers(stock_tickers, roic_index_info, logger)
+    tickers_df = sort_dataframe(tickers_df, logger)
 
-    logger.info('Sorting dataframe')
-    tickers_df = tickers_df.sort_values('roic', ascending=False)
-    tickers_df['roic_index_number'] = np.arange(tickers_df['roic'].count())
-    tickers_df = tickers_df.sort_values('earning_yield', ascending=True)
+    export_dataframe_to_excel(tickers_df, logger)
 
-    tickers_df['earning_yield_index'] = \
-        np.arange(tickers_df['earning_yield'].count())
-    tickers_df['magic_index'] = \
-        tickers_df['earning_yield_index'] + tickers_df['roic_index_number']
 
 def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logger) -> None:
     """Exportts the ticker dataframe into an excel file
