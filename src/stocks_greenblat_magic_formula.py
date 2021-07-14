@@ -69,6 +69,23 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     )
 
 
+def fill_earning_yield_field(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
+    """Fill the field earning_yield_index based on earning_yield field
+
+    :param tickers_df: Dataframe with the stocks information
+    :type tickers_df: pandas.DataFrame
+    :param logger: Logger object
+    :type logger: logging.Logger
+    :return: Dataframe with field earning_yield_index filled
+    :rtype: pandas.DataFrame
+    """
+    logger.info('Filling field earning_yield_index')
+    tickers_df['earning_yield_index'] = \
+        np.arange(tickers_df['earning_yield'].count())
+
+    return tickers_df
+
+
 def fill_magic_index_field(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
     """Fill the field magic_index based on earning_yield_index and roic_index_number
 
