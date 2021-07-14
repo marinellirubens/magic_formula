@@ -69,6 +69,32 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     )
 
 
+def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
+    """Sorts the dataframe and fill the fields roic_index_number, earning_yield_field, magic_index_field
+    Those fields depends on the sorting to be generates
+
+    :param tickers_df: Dataframe with the stocks information
+    :type tickers_df: pandas.DataFrame
+    :param logger: Logger object
+    :type logger: logging.Logger
+    :return: None
+    :rtype: pandas.DataFrame
+    """
+    logger.info('Sorting dataframe')
+    tickers_df = tickers_df.sort_values('roic', ascending=False)
+    
+    tickers_df = fill_roic_index_number_field(tickers_df, logger)
+    
+    tickers_df = tickers_df.sort_values('earning_yield', ascending=True)
+
+    tickers_df = fill_earning_yield_field(tickers_df, logger)
+    tickers_df = fill_magic_index_field(tickers_df, logger)
+
+    tickers_df = tickers_df.sort_values('magic_index', ascending=True)
+
+    return tickers_df
+
+
 def fill_roic_index_number_field(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
     """Fill the field roic_index_number based on roic field
 
