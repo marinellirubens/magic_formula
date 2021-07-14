@@ -69,6 +69,21 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     )
 
 
+def fill_roic_index_number_field(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
+    """Fill the field roic_index_number based on roic field
+
+    :param tickers_df: Dataframe with the stocks information
+    :type tickers_df: pandas.DataFrame
+    :param logger: Logger object
+    :type logger: logging.Logger
+    :return: Dataframe with field roic_index_number filled
+    :rtype: pandas.DataFrame
+    """
+    tickers_df['roic_index_number'] = np.arange(tickers_df['roic'].count())
+
+    return tickers_df
+
+
 def fill_earning_yield_field(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
     """Fill the field earning_yield_index based on earning_yield field
 
