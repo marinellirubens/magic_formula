@@ -174,7 +174,7 @@ class TestMagicFormula(unittest.TestCase):
         self.assertFalse(return_)
 
     def test_get_ticker_info_valid_information_dict_false(self):
-        wege = MagicFormula('DTEX3.SA', self.logger)
+        wege = MagicFormula('DTEXa3.SA', self.logger)
         return_ = wege.get_ticker_info()
 
         self.assertIsNone(return_)
