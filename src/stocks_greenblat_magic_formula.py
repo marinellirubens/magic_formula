@@ -30,6 +30,8 @@ from setup import set_logger
 from status_invest import get_ticker_roic_info, get_ibrx_info
 from magic_formula import MagicFormula
 
+__VERSION__ = '0.1.0'
+
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 
@@ -37,6 +39,9 @@ XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 def main(logger: logging.Logger = logging.getLogger(__name__)):
     """Main method """
     options = get_arguments()
+    if options.version:
+        show_version()
+
     if not os.path.exists(XLSX_PATH):
         os.makedirs(XLSX_PATH)
 
@@ -50,6 +55,11 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     tickers_df = sort_dataframe(tickers_df, logger)
 
     export_dataframe_to_excel(tickers_df, logger)
+
+
+def show_version():
+    print(f'MagicFormula v{__VERSION__}')
+    exit(0)
 
 
 def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logger) -> None:
