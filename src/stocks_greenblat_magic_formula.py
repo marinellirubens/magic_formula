@@ -27,6 +27,7 @@ import sqlalchemy
 
 from config import get_config
 from config import set_logger
+from config import get_arguments
 from status_invest import get_ticker_roic_info, get_ibrx_info
 from magic_formula import MagicFormula
 
@@ -266,36 +267,6 @@ def process_tickers(stock_tickers: set, roic_index: dict,
         threads = []
 
     return df
-
-
-def get_arguments(args: list = sys.argv[1:]):
-    """Parse argument on command line execution
-
-    :param args: arguments to be parsed
-    :return: returns the options parsed
-    """
-    parser = argparse.ArgumentParser(description='Parses command.')
-    # TODO: create function to print version
-    parser.add_argument('-V', '--version', help='Show program version', action='store_true')
-    parser.add_argument(
-        '-i', '--index', help='Bovespa index (ibrx_100, ibovespa, smal_caps)',
-        action='store', type=str, default="ibrx_100"
-    )
-
-    parser.add_argument(
-        '-e', '--ebit', help='Minimun ebit to be considered',
-        action='store', type=int, default=0
-    )
-
-    parser.add_argument(
-        '-m', '--market_cap', help='Minimun market cap', action='store',
-        default=0
-    )
-
-    parser.add_argument('-q', '--qty', help='Quantity of stocks to be exported.', action='store_true')
-    
-    options = parser.parse_args(args)
-    return options
 
 
 if __name__ == '__main__':
