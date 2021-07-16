@@ -13,7 +13,7 @@ sys.path.append(
 
 
 from src.magic_formula import MagicFormula, TICKER_INFO
-from src.setup import set_logger
+from src.config import set_logger
 
 
 class TestMagicFormula(unittest.TestCase):

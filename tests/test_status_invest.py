@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src'
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../tests')))
 
 
-from src.setup import get_config, set_logger
+from src.config import get_config, set_logger
 from src.status_invest import get_ibrx_info, get_ticker_roic_info
 
 from config_tests import STATUS_INVEST_URL_RETURN
