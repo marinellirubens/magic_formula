@@ -13,11 +13,12 @@
 # TODO: Separate into different modules so the code is cleaner
 # TODO: Improve the coverage of the tests
 
-
+import argparse
 import datetime
 import logging
 import logging.handlers
 import os
+import sys
 import threading
 
 import numpy as np
@@ -29,12 +30,18 @@ from config import set_logger
 from status_invest import get_ticker_roic_info, get_ibrx_info
 from magic_formula import MagicFormula
 
+__VERSION__ = '0.1.0'
+
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 
 
 def main(logger: logging.Logger = logging.getLogger(__name__)):
     """Main method """
+    options = get_arguments()
+    if options.version:
+        show_version()
+
     if not os.path.exists(XLSX_PATH):
         os.makedirs(XLSX_PATH)
 
@@ -48,6 +55,11 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     tickers_df = sort_dataframe(tickers_df, logger)
 
     export_dataframe_to_excel(tickers_df, logger)
+
+
+def show_version():
+    print(f'MagicFormula v{__VERSION__}')
+    exit(0)
 
 
 def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logger) -> None:
@@ -238,6 +250,36 @@ def process_tickers(stock_tickers: set, roic_index: dict,
         threads = []
 
     return df
+
+
+def get_arguments(args: list = sys.argv[1:]):
+    """Parse argument on command line execution
+
+    :param args: arguments to be parsed
+    :return: returns the options parsed
+    """
+    parser = argparse.ArgumentParser(description='Parses command.')
+    # TODO: create function to print version
+    parser.add_argument('-V', '--version', help='Show program version', action='store_true')
+    parser.add_argument(
+        '-i', '--index', help='Bovespa index (ibrx_100, ibovespa, smal_caps)',
+        action='store', type=str, default="ibrx_100"
+    )
+
+    parser.add_argument(
+        '-e', '--ebit', help='Minimun ebit to be considered',
+        action='store', type=int, default=0
+    )
+
+    parser.add_argument(
+        '-m', '--market_cap', help='Minimun market cap', action='store',
+        default=0
+    )
+
+    parser.add_argument('-q', '--qty', help='Quantity of stocks to be exported.', action='store_true')
+    
+    options = parser.parse_args(args)
+    return options
 
 
 if __name__ == '__main__':
