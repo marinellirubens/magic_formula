@@ -10,3 +10,4 @@ xlsx_files
 .idea
 *.coverage*
 venv
+src/config.json
