@@ -1,5 +1,4 @@
 """Module to take info from yahoo finance and status invest"""
-# TODO: Introduce CLI
 # TODO: Change the export for database (postgresql)
 # TODO: Change into a service
 # TODO: Include possibilite to use all bovespa stocks
@@ -24,6 +23,7 @@ import threading
 import numpy as np
 import pandas
 from pandas import DataFrame
+import sqlalchemy
 
 from config import get_config
 from config import set_logger
@@ -38,6 +38,7 @@ XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 
 def main(logger: logging.Logger = logging.getLogger(__name__)):
     """Main method """
+    # TODO: Integrate CLI to the system
     options = get_arguments()
     if options.version:
         show_version()
@@ -55,6 +56,7 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     tickers_df = sort_dataframe(tickers_df, logger)
 
     export_dataframe_to_excel(tickers_df, logger)
+    export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"])
 
 
 def show_version():
@@ -80,6 +82,20 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logg
         sheet_name='stocks', index=False, engine='openpyxl',
         freeze_panes=(1, 0),
     )
+
+
+def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger, connection_string: str) -> None:
+    """Exportts the ticker dataframe into an postgresql
+
+    :param tickers_df: Dataframe with the stocks information
+    :type tickers_df: pandas.DataFrame
+    :param logger: Logger object
+    :type logger: logging.Logger
+    :return: None
+    """
+    logger.info(f'Exporting data into postgresql.')
+    engine = sqlalchemy.create_engine(connection_string)
+    tickers_df.to_sql('magicformula', engine, if_exists='append', index=False)
 
 
 def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
