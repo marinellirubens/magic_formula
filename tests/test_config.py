@@ -11,9 +11,9 @@ try:
 except:
     raise
 
-from src.setup import logging
-from src.setup import get_config
-from src.setup import set_logger
+from src.config import logging
+from src.config import get_config
+from src.config import set_logger
 
 
 def scenario_logger():

@@ -24,8 +24,8 @@ import numpy as np
 import pandas
 from pandas import DataFrame
 
-from setup import get_config
-from setup import set_logger
+from config import get_config
+from config import set_logger
 from status_invest import get_ticker_roic_info, get_ibrx_info
 from magic_formula import MagicFormula
 
