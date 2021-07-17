@@ -4,6 +4,7 @@ import sys
 import unittest
 import logging
 import yahooquery
+from unittest import mock
 
 
 sys.path.append(
@@ -14,6 +15,10 @@ sys.path.append(
 
 from src.magic_formula import MagicFormula, TICKER_INFO
 from src.config import set_logger
+
+
+def mock_fill_ticker_info(self):
+    self.ticker_info = None
 
 
 class TestMagicFormula(unittest.TestCase):
@@ -179,3 +184,47 @@ class TestMagicFormula(unittest.TestCase):
 
         self.assertIsNone(return_)
         self.assertFalse(return_)
+
+    def test_fill_total_stockholder_equity(self):
+        wege = MagicFormula('WEGE3.SA', self.logger)
+        wege.get_ticker_info()
+
+        return_ = wege.get_ticker_data()
+        wege.fill_total_stockholder_equity()
+
+        self.assertIsNotNone(wege.total_stockholder_equity)
+        self.assertGreater(wege.total_stockholder_equity, 0)
+
+    def test_calculate_tev(self):
+        wege = MagicFormula('WEGE3.SA', self.logger)
+        wege.get_ticker_info()
+
+        return_ = wege.get_ticker_data()
+        wege.fill_total_stockholder_equity()
+        wege.calculate_tev()
+
+        self.assertIsNotNone(wege.tev)
+        self.assertGreater(wege.tev, 0)
+
+    def test_calculate_earning_yield(self):
+        wege = MagicFormula('WEGE3.SA', self.logger)
+        wege.get_ticker_info()
+
+        return_ = wege.get_ticker_data()
+        wege.fill_total_stockholder_equity()
+        wege.calculate_tev()
+        ey = wege.calculate_earning_yield()
+
+        self.assertIsNotNone(ey)
+        self.assertGreater(ey, 0)
+        self.assertEqual(ey, (round((wege.tev / wege.ebit), 2)))
+
+    def test_valid_ticker_info(self):
+        wege = MagicFormula('WEGE3.SA', self.logger)
+        wege.get_ticker_info()
+
+        with mock.patch('src.magic_formula.MagicFormula.fill_ticker_info', mock_fill_ticker_info) as filler:
+            return_ = wege.get_ticker_data()
+
+            self.assertFalse(wege.valid_ticker_info())
+            self.assertIsNone(wege.ticker_info)
