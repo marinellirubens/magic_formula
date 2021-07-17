@@ -21,3 +21,13 @@ from src.stocks_greenblat_magic_formula import logging
 def scenario_logger():
     logger = logging.getLogger(__name__)
     return logger
+
+
+class TestMainModule(unittest.TestCase):
+    @mock.patch('builtins.exit')
+    @mock.patch('builtins.print')
+    def test_print_version(self, mock_print, mock_exit):
+        green.show_version()
+
+        mock_print.assert_called_with(f'MagicFormula v{green.__VERSION__}')
+        mock_exit.assert_called_with(0)
