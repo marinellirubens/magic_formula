@@ -53,7 +53,6 @@ def get_arguments(args: list = sys.argv[1:]):
     :return: returns the options parsed
     """
     parser = argparse.ArgumentParser(description='Parses command.')
-    # TODO: create function to print version
     parser.add_argument('-V', '--version', help='Show program version', action='store_true')
     parser.add_argument(
         '-i', '--index', help='Bovespa index (ibrx_100, ibovespa, smal_caps)',
@@ -66,11 +65,13 @@ def get_arguments(args: list = sys.argv[1:]):
     )
 
     parser.add_argument(
-        '-m', '--market_cap', help='Minimun market cap', action='store',
+        '-m', '--market_cap', help='Minimun market cap', action='store', type=int,
         default=0
     )
 
-    parser.add_argument('-q', '--qty', help='Quantity of stocks to be exported.', action='store_true')
+    parser.add_argument('-q', '--qty', help='Quantity of stocks to be exported.', action='store',
+        type=int, default=15
+    )
     
     options = parser.parse_args(args)
     return options
