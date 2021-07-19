@@ -93,9 +93,11 @@ def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger
     :return: None
     """
     logger.info(f'Exporting data into postgresql.')
+    try:
     engine = sqlalchemy.create_engine(connection_string)
     tickers_df.to_sql('magicformula', engine, if_exists='append', index=False)
-
+    except sqlalchemy.exc.OperationalError as error:
+        logger.error(f'Error on conection with database {error}')
 
 def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
     """Sorts the dataframe and fill the fields roic_index_number, earning_yield_field, magic_index_field
