@@ -37,6 +37,7 @@ XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 
 def main(logger: logging.Logger = logging.getLogger(__name__)):
     """Main method """
+    global MAX_NUMBER_THREADS
     # TODO: Integrate CLI to the system
     options = get_arguments()
     if options.version:
@@ -47,6 +48,7 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
 
     logger = set_logger(logger)
     config = get_config()
+    MAX_NUMBER_THREADS = config.get('MAX_NUMBER_THREADS', MAX_NUMBER_THREADS)
     roic_index_info = get_ticker_roic_info(
         config['STATUS_INVEST_URL'].format('"')
     )
@@ -94,8 +96,8 @@ def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger
     """
     logger.info(f'Exporting data into postgresql.')
     try:
-    engine = sqlalchemy.create_engine(connection_string)
-    tickers_df.to_sql('magicformula', engine, if_exists='append', index=False)
+        engine = sqlalchemy.create_engine(connection_string)
+        tickers_df.to_sql('magicformula', engine, if_exists='append', index=False)
     except sqlalchemy.exc.OperationalError as error:
         logger.error(f'Error on conection with database {error}')
 
