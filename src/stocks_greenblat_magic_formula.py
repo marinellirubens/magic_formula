@@ -56,8 +56,8 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     tickers_df = process_tickers(stock_tickers, roic_index_info, logger)
     tickers_df = sort_dataframe(tickers_df, logger)
 
-    export_dataframe_to_excel(tickers_df, logger)
-    export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"])
+    export_dataframe_to_excel(tickers_df, logger, options.qty)
+    export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
 
 
 def show_version():
@@ -65,7 +65,8 @@ def show_version():
     exit(0)
 
 
-def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logger) -> None:
+def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logger,
+    number_of_lines: int = None) -> None:
     """Exportts the ticker dataframe into an excel file
 
     :param tickers_df: Dataframe with the stocks information
@@ -77,15 +78,19 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logg
     excel_file_name = \
         f'{XLSX_PATH}stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}.xlsx'
 
+    if number_of_lines:
+        tickers_df = tickers_df.head(number_of_lines)
+
     logger.info(f'Exporting data into excel {excel_file_name}')
     tickers_df.to_excel(
         excel_writer=excel_file_name,
         sheet_name='stocks', index=False, engine='openpyxl',
-        freeze_panes=(1, 0),
+        freeze_panes=(1, 0)
     )
 
 
-def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger, connection_string: str) -> None:
+def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger, connection_string: str,
+    number_of_lines: int = None) -> None:
     """Exportts the ticker dataframe into an postgresql
 
     :param tickers_df: Dataframe with the stocks information
@@ -96,10 +101,14 @@ def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger
     """
     logger.info(f'Exporting data into postgresql.')
     try:
+        if number_of_lines:
+            tickers_df = tickers_df.head(number_of_lines)
+
         engine = sqlalchemy.create_engine(connection_string)
         tickers_df.to_sql('magicformula', engine, if_exists='append', index=False)
     except sqlalchemy.exc.OperationalError as error:
         logger.error(f'Error on conection with database {error}')
+
 
 def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
     """Sorts the dataframe and fill the fields roic_index_number, earning_yield_field, magic_index_field
