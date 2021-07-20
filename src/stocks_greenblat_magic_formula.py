@@ -48,11 +48,17 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
 
     logger = set_logger(logger)
     config = get_config()
+
+    if options.index not in ['BRX100', 'IBOV', 'SMALL', 'IDIV']:
+        logger.error(f'Option {options.index} invalid for index.')
+        exit(1)
+
     MAX_NUMBER_THREADS = config.get('MAX_NUMBER_THREADS', MAX_NUMBER_THREADS)
     roic_index_info = get_ticker_roic_info(
         config['STATUS_INVEST_URL'].format('"')
     )
-    stock_tickers = get_ibrx_info(config['BRX10_URL'], logger)
+
+    stock_tickers = get_ibrx_info(config[f'{options.index}_URL'], logger)
     tickers_df = process_tickers(stock_tickers, roic_index_info, logger)
     tickers_df = sort_dataframe(tickers_df, logger)
 
