@@ -6,11 +6,11 @@ A ideia desse projeto é usar a formula do Joel Greenblat somado com algumas ide
 
 ## Requerimentos
 Para executar esse programa os seguintes requerimentos devem ser atendidos:
-Versáo do Python
+Versão do Python
 ```shell
 $ Python 3.6.5
 ```
-As seguintes libs sáo utilizadas:
+As seguintes libs são utilizadas:
 ```python
 pandas==1.2.4
 openpyxl==3.0.7
@@ -21,7 +21,7 @@ numpy==1.20.2
 pytest==6.2.4
 pytest-cov==2.11.1
 ```
-As libs estáo todas listadas no requirements.txt e pode ser instalado usando o pip conforme abaixo:
+As libs estão todas listadas no requirements.txt e pode ser instalado usando o pip conforme abaixo:
 Windows:
 ```shell
 $ python -m pip install -r requirements.txt
