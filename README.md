@@ -39,6 +39,25 @@ $ python3 src/stocks_greenblat_magic_formula.py
 Esse comando ja esta contido nos arquivos run.sh(Linux e Macos) e run.cmd(Windows), pode ser observado abaixo o output do programa abaixo:
 ![program_running](program_running.png "program_running")
 
+Podem ser verificados os comandos de usando o argumento -h:
+```shell
+usage: stocks_greenblat_magic_formula.py [-h] [-V] [-i INDEX] [-e EBIT]
+                                         [-m MARKET_CAP] [-q QTY]
+
+Parses command.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -V, --version         Show program version
+  -i INDEX, --index INDEX
+                        Bovespa index (BRX100, IBOV, SMALL, IDIV)
+  -e EBIT, --ebit EBIT  Minimun ebit to be considered
+  -m MARKET_CAP, --market_cap MARKET_CAP
+                        Minimun market cap
+  -q QTY, --qty QTY     Quantity of stocks to be exported.
+```
+
+
 ## Output
 Como o objetivo desse programa é listar as ações por ordem de qual esta mais barata, um excel é exportado com o seguinte padrão de nome:
 ```

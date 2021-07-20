@@ -1,9 +1,9 @@
-pandas==1.2.4
-openpyxl==3.0.7
+pandas>=1.1.4
+openpyxl>=2.0.7
 yahooquery
 bs4
 requests==2.25.1
-numpy==1.20.2
+numpy>=1.1.2
 pytest==6.2.4
 pytest-cov==2.11.1
 psycopg2
