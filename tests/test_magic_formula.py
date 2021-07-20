@@ -44,7 +44,6 @@ class TestMagicFormula(unittest.TestCase):
         wege = MagicFormula('WEGE3.SA', self.logger)
         wege.get_ticker_info()
         wege.get_recomendation_trend()
-        # TODO: Imcluir testes de quando esta valido
         self.assertIsInstance(wege.recommendation_trend, tuple)
 
     def test_valid_recomendation_trend_error(self):

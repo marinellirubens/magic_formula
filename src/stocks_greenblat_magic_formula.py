@@ -1,15 +1,12 @@
 """Module to take info from yahoo finance and status invest"""
-# TODO: Change the export for database (postgresql)
 # TODO: Change into a service
 # TODO: Include possibilite to use all bovespa stocks
 # TODO: Include the possibility to read other specific indexes
 # TODO: Improve tests
-# TODO: create github actions for the tests
 # TODO: Change the filters to make then optional so the formula is closer \
 # to pure magic formula
 # TODO: Improve the readme.md
 # TODO: Improve the sheet for better undestanding the output
-# TODO: Separate into different modules so the code is cleaner
 # TODO: Improve the coverage of the tests
 
 import datetime
