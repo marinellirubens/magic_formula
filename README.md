@@ -1,4 +1,6 @@
 # Magic Formula
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 Projeto para usar a formula criada por Joel Greenblat no livro "The little book that beats the market" para analisar as acoes da Bovespa.
 
 ## Projeto
@@ -64,4 +66,5 @@ Como o objetivo desse programa é listar as ações por ordem de qual esta mais 
 stocks_magic_formula_{yyyymmdd}.xlsx
 ```
 Exemplo de arquivo:
+
 ![exemplo_planilha](exemplo_planilha.png "exemplo_planilha")
