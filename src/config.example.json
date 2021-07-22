@@ -1,5 +1,5 @@
 {
-    "BRX10_URL":"https://statusinvest.com.br/indices/indice-brasil-100",
+    "BRX100_URL":"https://statusinvest.com.br/indices/indice-brasil-100",
     "SMALL_URL":"https://statusinvest.com.br/indices/indice-small-cap",
     "IBOV_URL":"https://statusinvest.com.br/indices/ibovespa",
     "IDIV_URL":"https://statusinvest.com.br/indices/indice-dividendos",
