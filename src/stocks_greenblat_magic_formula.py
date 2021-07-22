@@ -1,15 +1,12 @@
 """Module to take info from yahoo finance and status invest"""
-# TODO: Change the export for database (postgresql)
 # TODO: Change into a service
 # TODO: Include possibilite to use all bovespa stocks
 # TODO: Include the possibility to read other specific indexes
 # TODO: Improve tests
-# TODO: create github actions for the tests
 # TODO: Change the filters to make then optional so the formula is closer \
 # to pure magic formula
 # TODO: Improve the readme.md
 # TODO: Improve the sheet for better undestanding the output
-# TODO: Separate into different modules so the code is cleaner
 # TODO: Improve the coverage of the tests
 
 import datetime
@@ -37,6 +34,7 @@ XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 
 def main(logger: logging.Logger = logging.getLogger(__name__)):
     """Main method """
+    global MAX_NUMBER_THREADS
     # TODO: Integrate CLI to the system
     options = get_arguments()
     if options.version:
@@ -47,15 +45,22 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
 
     logger = set_logger(logger)
     config = get_config()
+
+    if options.index not in ['BRX100', 'IBOV', 'SMALL', 'IDIV']:
+        logger.error(f'Option {options.index} invalid for index.')
+        exit(1)
+
+    MAX_NUMBER_THREADS = config.get('MAX_NUMBER_THREADS', MAX_NUMBER_THREADS)
     roic_index_info = get_ticker_roic_info(
         config['STATUS_INVEST_URL'].format('"')
     )
-    stock_tickers = get_ibrx_info(config['BRX10_URL'], logger)
+
+    stock_tickers = get_ibrx_info(config[f'{options.index}_URL'], logger)
     tickers_df = process_tickers(stock_tickers, roic_index_info, logger)
     tickers_df = sort_dataframe(tickers_df, logger)
 
-    export_dataframe_to_excel(tickers_df, logger)
-    export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"])
+    export_dataframe_to_excel(tickers_df, logger, options.qty)
+    export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
 
 
 def show_version():
@@ -63,7 +68,8 @@ def show_version():
     exit(0)
 
 
-def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logger) -> None:
+def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logger,
+    number_of_lines: int = None) -> None:
     """Exportts the ticker dataframe into an excel file
 
     :param tickers_df: Dataframe with the stocks information
@@ -75,15 +81,19 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logg
     excel_file_name = \
         f'{XLSX_PATH}stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}.xlsx'
 
+    if number_of_lines:
+        tickers_df = tickers_df.head(number_of_lines)
+
     logger.info(f'Exporting data into excel {excel_file_name}')
     tickers_df.to_excel(
         excel_writer=excel_file_name,
         sheet_name='stocks', index=False, engine='openpyxl',
-        freeze_panes=(1, 0),
+        freeze_panes=(1, 0)
     )
 
 
-def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger, connection_string: str) -> None:
+def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger, connection_string: str,
+    number_of_lines: int = None) -> None:
     """Exportts the ticker dataframe into an postgresql
 
     :param tickers_df: Dataframe with the stocks information
@@ -93,8 +103,14 @@ def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger
     :return: None
     """
     logger.info(f'Exporting data into postgresql.')
-    engine = sqlalchemy.create_engine(connection_string)
-    tickers_df.to_sql('magicformula', engine, if_exists='append', index=False)
+    try:
+        if number_of_lines:
+            tickers_df = tickers_df.head(number_of_lines)
+
+        engine = sqlalchemy.create_engine(connection_string)
+        tickers_df.to_sql('magicformula', engine, if_exists='append', index=False)
+    except sqlalchemy.exc.OperationalError as error:
+        logger.error(f'Error on conection with database {error}')
 
 
 def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:

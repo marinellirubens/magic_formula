@@ -164,7 +164,6 @@ class MagicFormula():
 
     def fill_market_cap(self):
         """Fills variable market_cap"""
-        # TODO: Create test
         self.market_cap = self.ticker_price.get('marketCap', 0)
 
     def fill_total_cash(self):
