@@ -60,7 +60,11 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     tickers_df = sort_dataframe(tickers_df, logger)
 
     export_dataframe_to_excel(tickers_df, logger, options.qty)
-    export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
+    if options.database:
+        if options.database not in ['POSTGRESQL']:
+            logger.error(f'Option {options.database} invalid for database.')
+            exit(1)
+        export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
 
 
 def show_version():
