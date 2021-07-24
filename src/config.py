@@ -72,6 +72,10 @@ def get_arguments(args: list = sys.argv[1:]):
     parser.add_argument('-q', '--qty', help='Quantity of stocks to be exported.', action='store',
         type=int, default=15
     )
+
+    parser.add_argument('-d', '--database', help='Send information to a database[POSTGRESQL].', action='store',
+        type=str
+    )
     
     options = parser.parse_args(args)
     return options
