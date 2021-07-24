@@ -1,0 +1,12 @@
+version: '3' 
+services:
+  magic-formula:
+    container_name: magic_formula
+    build: 
+      context: .
+      dockerfile: "./dockerfile"
+      args:
+        buildno: 1
+    image: "magic_formula:latest"
+    volumes:
+      - "./xlsx_files:/magic-formula/xlsx_files"
