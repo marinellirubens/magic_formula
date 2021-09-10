@@ -54,6 +54,7 @@ def get_arguments(args: list = sys.argv[1:]):
     """
     parser = argparse.ArgumentParser(description='Parses command.')
     parser.add_argument('-V', '--version', help='Show program version', action='store_true')
+    parser.add_argument('-t', '--threads', help='Max Number of threads', action='store', type=int, default=10)
     parser.add_argument(
         '-i', '--index', help='Bovespa index (BRX100, IBOV, SMALL, IDIV)',
         action='store', type=str, default=["BRX100"], nargs="+"
