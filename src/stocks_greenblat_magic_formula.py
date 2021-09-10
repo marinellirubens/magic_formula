@@ -54,7 +54,7 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
         logger.error(f'Option {options.index} invalid for index.')
         exit(1)
 
-    MAX_NUMBER_THREADS = config.get('MAX_NUMBER_THREADS', MAX_NUMBER_THREADS)
+    MAX_NUMBER_THREADS = options.threads
     roic_index_info = get_ticker_roic_info(
         config['STATUS_INVEST_URL'].format('"')
     )
