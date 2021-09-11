@@ -109,6 +109,7 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
         'symbol',
         'roic',
         'current_price',
+        'dividend_yield',
         'market_cap',
         'patrimonio_liquido',
         'ebit',
@@ -130,6 +131,7 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
         'symbol',
         'roic',
         'current_price',
+        'dividend_yield (%)',
         'market_cap',
         'net_worth',
         'ebit',
@@ -299,7 +301,7 @@ def return_earning_yield(symbol: str, df: DataFrame,
             stock.regular_market_time, stock.market_cap,
             stock.total_stockholder_equity, stock.ebit, stock.total_debt,
             stock.total_cash,
-            stock.shares_outstanding, stock.long_name, stock.short_name
+            stock.shares_outstanding, stock.long_name, stock.short_name, stock.dividend_yield
         ]
 
     return earning_yield
@@ -324,7 +326,7 @@ def process_tickers(stock_tickers: set, roic_index: dict,
             'roic', 'buy_recomendation', 'sell_recomendation', 'current_price',
             'regular_market_time', 'market_cap', 'patrimonio_liquido', 'ebit',
             'total_debt', 'total_cash', 'shares_outstanding', 'long_name',
-            'short_name'
+            'short_name', 'dividend_yield'
         ]
     )
 

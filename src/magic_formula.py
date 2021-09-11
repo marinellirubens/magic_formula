@@ -32,6 +32,7 @@ class MagicFormula():
         self.ticker_info = None
         self._ebit_min = ebit_min
         self._market_cap_min = market_cap_min
+        self.dividend_yield = 0
 
     def get_ticker_info(self) -> yahooquery.Ticker:
         """Returns the ticker info
@@ -56,6 +57,10 @@ class MagicFormula():
         self.fill_ebit()
 
         return self.ticker
+
+    def fill_dividend_yield(self) -> None:
+        """Fill dividend yield information"""
+        self.dividend_yield = round(self.ticker.summary_detail[self.symbol]['dividendYield'] * 100, 2)
 
     def get_ticker_data(self) -> bool:
         """Gets ticker data from the Ticker object
@@ -93,6 +98,7 @@ class MagicFormula():
         self.fill_regular_market_time()
         self.fill_shares_outstanding()
         self.fill_total_stockholder_equity()
+        self.fill_dividend_yield()
 
         return True
 
