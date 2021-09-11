@@ -43,9 +43,5 @@ def get_ticker_roic_info(url: str) -> dict:
     
     df = df[['ticker', 'roic_index', 'roic']]
     df.set_index(['ticker'], inplace=True)
-    # df.to_excel(
-    #     excel_writer=f'{XLSX_PATH}roic_info_{datetime.datetime.now().strftime("%Y%m%d")}.xlsx',
-    #     sheet_name='stocks', index=True, engine='openpyxl', freeze_panes=(1, 0),
-    # )
     
     return df.to_dict('index')
