@@ -50,7 +50,7 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
         options.index = [options.index, ]
 
     possible_indexes = ['BRX100', 'IBOV', 'SMALL', 'IDIV']
-    if not all(index in possible_indexes  for index in options.index):
+    if not all(index in possible_indexes for index in options.index):
         logger.error(f'Option {options.index} invalid for index.')
         exit(1)
 
@@ -78,8 +78,9 @@ def show_version():
     exit(0)
 
 
-def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logger,
-    number_of_lines: int = None) -> None:
+def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
+                              logger: logging.Logger,
+                              number_of_lines: int = None) -> None:
     """Exportts the ticker dataframe into an excel file
 
     :param tickers_df: Dataframe with the stocks information
@@ -103,7 +104,7 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logg
 
 
 def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger, connection_string: str,
-    number_of_lines: int = None) -> None:
+                            number_of_lines: int = None) -> None:
     """Exportts the ticker dataframe into an postgresql
 
     :param tickers_df: Dataframe with the stocks information
@@ -112,7 +113,7 @@ def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger
     :type logger: logging.Logger
     :return: None
     """
-    logger.info(f'Exporting data into postgresql.')
+    logger.info('Exporting data into postgresql.')
     try:
         if number_of_lines:
             tickers_df = tickers_df.head(number_of_lines)
@@ -136,9 +137,9 @@ def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pand
     """
     logger.info('Sorting dataframe')
     tickers_df = tickers_df.sort_values('roic', ascending=False)
-    
+
     tickers_df = fill_roic_index_number_field(tickers_df, logger)
-    
+
     tickers_df = tickers_df.sort_values('earning_yield', ascending=True)
 
     tickers_df = fill_earning_yield_field(tickers_df, logger)
@@ -247,7 +248,7 @@ def return_earning_yield(symbol: str, df: DataFrame,
 
 
 def process_tickers(stock_tickers: set, roic_index: dict,
-                    logger: logging.Logger, 
+                    logger: logging.Logger,
                     options: Namespace) -> DataFrame:
     """Process tickers informations and return a pandas Dataframe
 

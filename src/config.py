@@ -38,11 +38,11 @@ def set_logger(logger: logging.Logger = logging.Logger(__name__), log_file_name:
 
     handler.setFormatter(formatter)
     buff_handler.setFormatter(formatter)
-    
+
     logger.setLevel('DEBUG')
     logger.addHandler(handler)
     logger.addHandler(buff_handler)
-    
+
     return logger
 
 
@@ -53,8 +53,16 @@ def get_arguments(args: list = sys.argv[1:]):
     :return: returns the options parsed
     """
     parser = argparse.ArgumentParser(description='Parses command.')
-    parser.add_argument('-V', '--version', help='Show program version', action='store_true')
-    parser.add_argument('-t', '--threads', help='Max Number of threads', action='store', type=int, default=10)
+    parser.add_argument(
+        '-V', '--version', help='Show program version',
+        action='store_true'
+    )
+
+    parser.add_argument(
+        '-t', '--threads', help='Max Number of threads',
+        action='store', type=int, default=10
+    )
+
     parser.add_argument(
         '-i', '--index', help='Bovespa index (BRX100, IBOV, SMALL, IDIV)',
         action='store', type=str, default=["BRX100"], nargs="+"
@@ -70,13 +78,15 @@ def get_arguments(args: list = sys.argv[1:]):
         default=0
     )
 
-    parser.add_argument('-q', '--qty', help='Quantity of stocks to be exported.', action='store',
+    parser.add_argument(
+        '-q', '--qty', help='Quantity of stocks to be exported.', action='store',
         type=int, default=15
     )
 
-    parser.add_argument('-d', '--database', help='Send information to a database[POSTGRESQL].', action='store',
+    parser.add_argument(
+        '-d', '--database', help='Send information to a database[POSTGRESQL].', action='store',
         type=str
     )
-    
+
     options = parser.parse_args(args)
     return options
