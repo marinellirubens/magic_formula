@@ -23,11 +23,11 @@ class TestSetup(unittest.TestCase):
         self.assertIsNotNone(config)
         self.assertIsInstance(config, dict)
         self.assertEqual(config['BRX10_URL'], 'https://statusinvest.com.br/indices/indice-brasil-100')
-        
+
     def test_set_logger(self):
         logger = scenario_logger()
         logger_formated: logging.Logger = set_logger(logger)
-        
+
         self.assertEqual(logger_formated.level, 10)
         self.assertIsInstance(logger_formated.handlers[0], logging.handlers.RotatingFileHandler)
         self.assertIsInstance(logger_formated.handlers[1], logging.StreamHandler)
@@ -40,16 +40,16 @@ class TestSetup(unittest.TestCase):
         options = get_arguments([])
         self.assertFalse(options.version)
         self.assertEqual(options.index, ['BRX100'])
-        self.assertEqual(options.ebit, 0)
+        self.assertEqual(options.ebit, 1)
         self.assertEqual(options.market_cap, 0)
         self.assertEqual(options.qty, 15)
 
     def test_get_arguments_arguments(self):
         arguments = [
-            [['-V'],[True, ['BRX100'], 0, 0, 15]],
-            [['-e', '2'],[False, ['BRX100'], 2, 0, 15]],
-            [['-i', 'IBOV', '-m', '50000'],[False, ['IBOV'], 0, 50000, 15]],
-            [['-i', 'SMALL', '-m', '50001', '-q', '100'],[False, ['SMALL'], 0, 50001, 100]],
+            [['-V'], [True, ['BRX100'], 1, 0, 15]],
+            [['-e', '2'], [False, ['BRX100'], 2, 0, 15]],
+            [['-i', 'IBOV', '-m', '50000'], [False, ['IBOV'], 1, 50000, 15]],
+            [['-i', 'SMALL', '-m', '50001', '-q', '100'], [False, ['SMALL'], 1, 50001, 100]],
         ]
         for args in arguments:
             options = get_arguments(args[0])
