@@ -104,7 +104,29 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
         tickers_df = tickers_df.head(number_of_lines)
 
     logger.info(f'Exporting data into excel {excel_file_name}')
-    tickers_df.to_excel(
+
+    excel_df = tickers_df[[
+        'symbol',
+        'roic',
+        'current_price',
+        'market_cap',
+        'patrimonio_liquido',
+        'ebit',
+        'total_debt',
+        'total_cash',
+        'shares_outstanding',
+        'long_name',
+        'short_name',
+        'regular_market_time',
+        'buy_recomendation',
+        'sell_recomendation',
+        'earning_yield_index',
+        'magic_index',
+        'earning_yield',
+        'roic_index_number',
+    ]]
+
+    excel_df.to_excel(
         excel_writer=excel_file_name,
         sheet_name='stocks', index=False, engine='openpyxl',
         freeze_panes=(1, 0)
