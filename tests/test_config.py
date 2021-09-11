@@ -4,12 +4,7 @@ import unittest
 import logging
 
 
-try:
-    sys.path.append(
-        os.path.abspath(os.path.join(os.path.dirname(__file__), '../src'))
-    )
-except:
-    raise
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 from src.config import logging
 from src.config import get_config
