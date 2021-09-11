@@ -14,10 +14,13 @@ TICKER_INFO = namedtuple(
 
 
 class MagicFormula():
-    def __init__(self, symbol: str, logger: logging.Logger) -> None:
+    def __init__(self, symbol: str, logger: logging.Logger,
+                 ebit_min: int = 1, market_cap_min: int = 0) -> None:
         self.symbol = symbol
         self.logger = logger
         self.ticker_info = None
+        self._ebit_min = ebit_min
+        self._market_cap_min = market_cap_min
 
     def get_ticker_info(self) -> yahooquery.Ticker:
         """Returns the ticker info
@@ -26,12 +29,18 @@ class MagicFormula():
         :rtype: yahooquery.Ticker
         """
         self.ticker: yahooquery.Ticker = yahooquery.Ticker(self.symbol)
+
+        if isinstance(self.ticker.asset_profile[self.symbol], str):
+            return None
+
         self.all_modules = self.ticker.all_modules[self.symbol]
         if not self.valid_information_dict():
             return None
 
         self.financial_data = self.ticker.financial_data[self.symbol]
         self.ticker_price = self.all_modules.get('price', {})
+
+        self.logger.debug(self.symbol)
         self.industry = self.ticker.asset_profile[self.symbol]['industry']
         self.fill_ebit()
 
@@ -152,15 +161,15 @@ class MagicFormula():
         :return: Boolean with the result of the validation
         :rtype: bool
         """
-        return self.ebit > 0
+        return self.ebit >= self._ebit_min
 
     def valid_market_cap(self) -> bool:
-        """Validates if the variable ticker_proce is valid
+        """Validates if the variable market_cap is valid
 
         :return: Boolean with the result of the validation
         :rtype: bool
         """
-        return self.market_cap > 0
+        return self.market_cap >= self._market_cap_min
 
     def fill_market_cap(self):
         """Fills variable market_cap"""

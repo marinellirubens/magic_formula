@@ -36,8 +36,7 @@ O programa usa um arquivo de configuração exemplificado no arquivo src/config.
     "IBOV_URL":"https://statusinvest.com.br/indices/ibovespa",
     "IDIV_URL":"https://statusinvest.com.br/indices/indice-dividendos",
     "STATUS_INVEST_URL": "https://statusinvest.com.br/category/advancedsearchresult?search=%7B%22Sector%22%3A%22%22%2C%22SubSector%22%3A%22%22%2C%22Segment%22%3A%22%22%2C%22my_range%22%3A%220%3B25%22%2C%22dy%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22p_L%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22peg_Ratio%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22p_VP%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22p_Ativo%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22margemBruta%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22margemEbit%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22margemLiquida%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22p_Ebit%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22eV_Ebit%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22dividaLiquidaEbit%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22dividaliquidaPatrimonioLiquido%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22p_SR%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22p_CapitalGiro%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22p_AtivoCirculante%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22roe%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22roic%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22roa%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22liquidezCorrente%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22pl_Ativo%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22passivo_Ativo%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22giroAtivos%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22receitas_Cagr5%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22lucros_Cagr5%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22liquidezMediaDiaria%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22vpa%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22lpa%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%2C%22valorMercado%22%3A%7B%22Item1%22%3Anull%2C%22Item2%22%3Anull%7D%7D&CategoryType=1",
-    "POSTGRESQL_STRING": "postgresql+psycopg2://postgres:example@0.0.0.0/fmsdeinvestimento",
-    "MAX_NUMBER_THREADS": 30
+    "POSTGRESQL_STRING": "postgresql+psycopg2://postgres:example@0.0.0.0/fmsdeinvestimento"
 }
 ```
 Esse arquivo deve ser usado como base para a criação do arquivo src/config.json
@@ -78,20 +77,26 @@ $ docker-compose build
 ## Executando
 Podem ser verificados os comandos de usando o argumento -h:
 ```shell
-usage: stocks_greenblat_magic_formula.py [-h] [-V] [-i INDEX] [-e EBIT]
-                                         [-m MARKET_CAP] [-q QTY]
+usage: stocks_greenblat_magic_formula.py [-h] [-V] [-t THREADS] [-i INDEX [INDEX ...]] [-ll LOG_LEVEL] [-e EBIT] [-m MARKET_CAP] [-q QTY]
+                                         [-d DATABASE]
 
 Parses command.
 
 optional arguments:
   -h, --help            show this help message and exit
   -V, --version         Show program version
-  -i INDEX, --index INDEX
+  -t THREADS, --threads THREADS
+                        Max Number of threads
+  -i INDEX [INDEX ...], --index INDEX [INDEX ...]
                         Bovespa index (BRX100, IBOV, SMALL, IDIV)
+  -ll LOG_LEVEL, --log_level LOG_LEVEL
+                        Log level
   -e EBIT, --ebit EBIT  Minimun ebit to be considered
   -m MARKET_CAP, --market_cap MARKET_CAP
                         Minimun market cap
   -q QTY, --qty QTY     Quantity of stocks to be exported.
+  -d DATABASE, --database DATABASE
+                        Send information to a database[POSTGRESQL].
 ```
 
 O programa pode ser executado usando o seguinte comando
