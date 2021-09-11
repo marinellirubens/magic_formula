@@ -126,6 +126,27 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
         'roic_index_number',
     ]]
 
+    excel_df.columns = [
+        'symbol',
+        'roic',
+        'current_price',
+        'market_cap',
+        'net_worth',
+        'ebit',
+        'total_debt',
+        'total_cash',
+        'shares_outstanding',
+        'long_name',
+        'short_name',
+        'regular_market_time',
+        'buy_recomendation',
+        'sell_recomendation',
+        'earning_yield_index',
+        'magic_index',
+        'earning_yield',
+        'roic_index_number',
+    ]
+
     excel_df.to_excel(
         excel_writer=excel_file_name,
         sheet_name='stocks', index=False, engine='openpyxl',
