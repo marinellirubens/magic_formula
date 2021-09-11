@@ -33,6 +33,9 @@ class MagicFormula():
         self._ebit_min = ebit_min
         self._market_cap_min = market_cap_min
         self.dividend_yield = 0
+        self.ticker: yahooquery.Ticker = yahooquery.Ticker(self.symbol)
+        self.asset_profile = self.ticker.asset_profile[self.symbol]
+        self.all_modules = self.ticker.all_modules[self.symbol]
 
     def get_ticker_info(self) -> yahooquery.Ticker:
         """Returns the ticker info
@@ -40,12 +43,9 @@ class MagicFormula():
         :return: Ticker info
         :rtype: yahooquery.Ticker
         """
-        self.ticker: yahooquery.Ticker = yahooquery.Ticker(self.symbol)
-
-        if isinstance(self.ticker.asset_profile[self.symbol], str):
+        if isinstance(self.asset_profile, str):
             return None
 
-        self.all_modules = self.ticker.all_modules[self.symbol]
         if not self.valid_information_dict():
             return None
 
@@ -53,7 +53,7 @@ class MagicFormula():
         self.ticker_price = self.all_modules.get('price', {})
 
         self.logger.debug(self.symbol)
-        self.industry = self.ticker.asset_profile[self.symbol]['industry']
+        self.industry = self.asset_profile['industry']
         self.fill_ebit()
 
         return self.ticker
