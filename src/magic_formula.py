@@ -14,10 +14,11 @@ TICKER_INFO = namedtuple(
 
 
 class MagicFormula():
-    def __init__(self, symbol: str, logger: logging.Logger) -> None:
+    def __init__(self, symbol: str, logger: logging.Logger, ebit_min: int = 0) -> None:
         self.symbol = symbol
         self.logger = logger
         self.ticker_info = None
+        self._ebit_min = ebit_min
 
     def get_ticker_info(self) -> yahooquery.Ticker:
         """Returns the ticker info
@@ -152,7 +153,7 @@ class MagicFormula():
         :return: Boolean with the result of the validation
         :rtype: bool
         """
-        return self.ebit > 0
+        return self.ebit >= self._ebit_min
 
     def valid_market_cap(self) -> bool:
         """Validates if the variable ticker_proce is valid
