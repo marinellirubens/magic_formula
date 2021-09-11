@@ -70,6 +70,11 @@ def get_arguments(args: list = sys.argv[1:]):
     )
 
     parser.add_argument(
+        '-ll', '--log_level', help='Log level',
+        action='store', type=str, default="INFO"
+    )
+
+    parser.add_argument(
         '-e', '--ebit', help='Minimun ebit to be considered',
         action='store', type=int, default=1
     )
