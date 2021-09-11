@@ -1,7 +1,5 @@
 """Module to take info from yahoo finance and status invest"""
 # TODO: Change into a service
-# TODO: Include possibilite to use all bovespa stocks
-# TODO: Include the possibility to read other specific indexes
 # TODO: Improve tests
 # TODO: Change the filters to make then optional so the formula is closer \
 # to pure magic formula
