@@ -6,6 +6,7 @@
 # TODO: Improve the readme.md
 # TODO: Improve the sheet for better undestanding the output
 # TODO: Improve the coverage of the tests
+# TODO: Changes on main function to split responsabilities
 
 from argparse import Namespace
 import datetime
