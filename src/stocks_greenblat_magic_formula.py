@@ -172,6 +172,7 @@ def fill_roic_index_number_field(tickers_df: pandas.DataFrame, logger: logging.L
     :return: Dataframe with field roic_index_number filled
     :rtype: pandas.DataFrame
     """
+    logger.debug('Filling field roic_index_number')
     tickers_df['roic_index_number'] = np.arange(tickers_df['roic'].count())
 
     return tickers_df
@@ -204,6 +205,7 @@ def fill_magic_index_field(tickers_df: pandas.DataFrame, logger: logging.Logger)
     :return: Dataframe with field magic_index filled
     :rtype: pandas.DataFrame
     """
+    logger.debug('Filling field magic_index')
     tickers_df['magic_index'] = \
         tickers_df['earning_yield_index'] + tickers_df['roic_index_number']
 
