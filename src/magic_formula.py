@@ -15,7 +15,7 @@ TICKER_INFO = namedtuple(
 
 class MagicFormula():
     def __init__(self, symbol: str, logger: logging.Logger,
-                 ebit_min: int = 0, market_cap_min: int = 0) -> None:
+                 ebit_min: int = 1, market_cap_min: int = 0) -> None:
         self.symbol = symbol
         self.logger = logger
         self.ticker_info = None
