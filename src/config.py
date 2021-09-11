@@ -4,6 +4,7 @@ import os
 import json
 import sys
 import argparse
+from argparse import Namespace
 
 
 def get_config(config_file: str = os.path.join(os.path.dirname(__file__), 'config.json')) -> dict:
@@ -47,7 +48,7 @@ def set_logger(logger: logging.Logger = logging.Logger(__name__), log_file_name:
     return logger
 
 
-def get_arguments(args: list = sys.argv[1:]):
+def get_arguments(args: list = sys.argv[1:]) -> Namespace:
     """Parse argument on command line execution
 
     :param args: arguments to be parsed
