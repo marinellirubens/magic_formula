@@ -9,6 +9,7 @@
 # TODO: Improve the sheet for better undestanding the output
 # TODO: Improve the coverage of the tests
 
+from argparse import Namespace
 import datetime
 import logging
 import logging.handlers
@@ -62,7 +63,7 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     for index in options.index:
         stock_tickers.update(get_ibrx_info(config[f'{index}_URL'], logger))
 
-    tickers_df = process_tickers(stock_tickers, roic_index_info, logger)
+    tickers_df = process_tickers(stock_tickers, roic_index_info, logger, options)
     tickers_df = sort_dataframe(tickers_df, logger)
 
     export_dataframe_to_excel(tickers_df, logger, options.qty)
@@ -199,7 +200,8 @@ def fill_magic_index_field(tickers_df: pandas.DataFrame, logger: logging.Logger)
 
 def return_earning_yield(symbol: str, df: DataFrame,
                          index: int, roic_index: dict,
-                         logger: logging.Logger) -> float:
+                         logger: logging.Logger,
+                         options: Namespace) -> float:
     """Returns stock earning yield.
 
     :param symbol: Ticker symbol
@@ -215,7 +217,7 @@ def return_earning_yield(symbol: str, df: DataFrame,
     :return: Earning yeld of the current stock
     :rtype: float
     """
-    stock = MagicFormula(symbol, logger)
+    stock = MagicFormula(symbol, logger, ebit=options.ebit, market_cap_min=options.market_cap)
     if stock.get_ticker_info() is None:
         return False
 
@@ -246,7 +248,8 @@ def return_earning_yield(symbol: str, df: DataFrame,
 
 
 def process_tickers(stock_tickers: set, roic_index: dict,
-                    logger: logging.Logger) -> DataFrame:
+                    logger: logging.Logger, 
+                    options: Namespace) -> DataFrame:
     """Process tickers informations and return a pandas Dataframe
 
     :param stock_tickers: List of the stock tickers
@@ -277,7 +280,7 @@ def process_tickers(stock_tickers: set, roic_index: dict,
 
         thread = threading.Thread(
             target=return_earning_yield,
-            args=(ticker + '.SA', df, index, roic_index, logger, )
+            args=(ticker + '.SA', df, index, roic_index, logger, options, )
         )
         logger.info(f'Processing ticker: {ticker} on thread {thread}')
 
