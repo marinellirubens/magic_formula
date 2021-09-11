@@ -39,6 +39,8 @@ class MagicFormula():
 
         self.financial_data = self.ticker.financial_data[self.symbol]
         self.ticker_price = self.all_modules.get('price', {})
+
+        self.logger.debug(self.symbol)
         self.industry = self.ticker.asset_profile[self.symbol]['industry']
         self.fill_ebit()
 
