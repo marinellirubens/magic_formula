@@ -32,8 +32,11 @@ MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 
 
-def main(logger: logging.Logger = logging.getLogger(__name__)):
-    """Main method """
+def main(logger: logging.Logger = logging.getLogger(__name__)) -> None:
+    """Main method
+
+    :return: None
+    """
     global MAX_NUMBER_THREADS
     options = get_arguments()
     if options.version:
@@ -72,7 +75,11 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
         export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
 
 
-def show_version():
+def show_version() -> None:
+    """Prints program version
+
+    :return: None
+    """
     print(f'MagicFormula v{__VERSION__}')
     exit(0)
 
@@ -80,12 +87,14 @@ def show_version():
 def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
                               logger: logging.Logger,
                               number_of_lines: int = None) -> None:
-    """Exportts the ticker dataframe into an excel file
+    """Exports the ticker dataframe into an excel file
 
     :param tickers_df: Dataframe with the stocks information
     :type tickers_df: pandas.DataFrame
     :param logger: Logger object
     :type logger: logging.Logger
+    :param number_of_lines: Number of lines to be exported on the excel file
+    :type number_of_lines: int
     :return: None
     """
     excel_file_name = \
@@ -110,6 +119,10 @@ def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger
     :type tickers_df: pandas.DataFrame
     :param logger: Logger object
     :type logger: logging.Logger
+    :param connection_string: Database connection string
+    :type connection_string: str
+    :param number_of_lines: Number of lines to be exported on the excel file
+    :type number_of_lines: int
     :return: None
     """
     logger.info('Exporting data into postgresql.')
