@@ -48,7 +48,7 @@ def set_logger(logger: logging.Logger = logging.Logger(__name__), log_file_name:
     return logger
 
 
-def get_arguments(args: list = sys.argv[1:]):
+def get_arguments(args: list = sys.argv[1:]) -> Namespace:
     """Parse argument on command line execution
 
     :param args: arguments to be parsed
