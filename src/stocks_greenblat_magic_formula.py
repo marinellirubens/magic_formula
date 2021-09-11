@@ -173,7 +173,7 @@ def fill_earning_yield_field(tickers_df: pandas.DataFrame, logger: logging.Logge
     :return: Dataframe with field earning_yield_index filled
     :rtype: pandas.DataFrame
     """
-    logger.info('Filling field earning_yield_index')
+    logger.debug('Filling field earning_yield_index')
     tickers_df['earning_yield_index'] = \
         np.arange(tickers_df['earning_yield'].count())
 
@@ -281,7 +281,7 @@ def process_tickers(stock_tickers: set, roic_index: dict,
             target=return_earning_yield,
             args=(ticker + '.SA', df, index, roic_index, logger, options, )
         )
-        logger.info(f'Processing ticker: {ticker} on thread {thread}')
+        logger.debug(f'Processing ticker: {ticker} on thread {thread}')
 
         thread.daemon = False
         thread.start()
