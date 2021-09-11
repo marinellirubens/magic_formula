@@ -41,7 +41,7 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     if not os.path.exists(XLSX_PATH):
         os.makedirs(XLSX_PATH)
 
-    logger = set_logger(logger)
+    logger = set_logger(logger, log_level=options.log_level)
     config = get_config()
 
     if not isinstance(options.index, list):
