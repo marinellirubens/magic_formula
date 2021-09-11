@@ -36,7 +36,6 @@ XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 def main(logger: logging.Logger = logging.getLogger(__name__)):
     """Main method """
     global MAX_NUMBER_THREADS
-    # TODO: Integrate CLI to the system
     options = get_arguments()
     if options.version:
         show_version()
