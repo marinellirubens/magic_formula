@@ -29,6 +29,10 @@ class MagicFormula():
         :rtype: yahooquery.Ticker
         """
         self.ticker: yahooquery.Ticker = yahooquery.Ticker(self.symbol)
+
+        if isinstance(self.ticker.asset_profile[self.symbol], str):
+            return None
+
         self.all_modules = self.ticker.all_modules[self.symbol]
         if not self.valid_information_dict():
             return None
