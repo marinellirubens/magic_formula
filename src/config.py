@@ -4,6 +4,7 @@ import os
 import json
 import sys
 import argparse
+from argparse import Namespace
 
 
 def get_config(config_file: str = os.path.join(os.path.dirname(__file__), 'config.json')) -> dict:
