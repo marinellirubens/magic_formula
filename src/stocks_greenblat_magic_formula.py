@@ -218,7 +218,7 @@ def return_earning_yield(symbol: str, df: DataFrame,
     :rtype: float
     """
     # TODO: Change function name to be more precise with its real behaviour
-    stock = MagicFormula(symbol, logger, ebit=options.ebit, market_cap_min=options.market_cap)
+    stock = MagicFormula(symbol, logger, ebit_min=options.ebit, market_cap_min=options.market_cap)
     if stock.get_ticker_info() is None:
         return False
 
