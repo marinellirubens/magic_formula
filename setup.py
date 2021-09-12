@@ -4,8 +4,6 @@ setup(
     name='magic_formula',
     version='1.0.1',
     packages=find_packages(),
-    package_data={'magic_formula': ['magic_formula/config.json']},
-    include_package_data=True,
     entry_points={
         "console_scripts": [
             "magic_formula = magic_formula.magic_formula_main:main",
