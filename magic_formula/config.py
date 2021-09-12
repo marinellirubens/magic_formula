@@ -68,6 +68,11 @@ def get_arguments(args: list = sys.argv[1:]) -> Namespace:
     )
 
     parser.add_argument(
+        '-o', '--output_folder', help='Path for output folder',
+        action='store', type=str, default=None
+    )
+
+    parser.add_argument(
         '-i', '--index', help='Bovespa index (BRX100, IBOV, SMALL, IDIV)',
         action='store', type=str, default=["BRX100"], nargs="+"
     )
