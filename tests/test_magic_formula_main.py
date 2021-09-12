@@ -7,7 +7,7 @@ import logging
 from unittest import mock
 
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../magic_formula')))
 
 
 from magic_formula import magic_formula_main as green

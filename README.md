@@ -8,6 +8,11 @@ Projeto para usar a formula criada por Joel Greenblat no livro "The little book 
 ## Projeto
 A ideia desse projeto é usar a formula do Joel Greenblat somado com algumas ideias propostas pelo Ramiro (Clube do Valor) para gerar uma planilha com as informações das ações mais baratas do indice IBRX100, outro proposito desse projeto é servir como um projeto para o meu portifolio como programador
 
+```shell
+$ magic_formula -V
+MagicFormula v1.0.1
+```
+
 ## Requerimentos
 Para executar esse programa os seguintes requerimentos devem ser atendidos:
 Versão do Python
@@ -28,7 +33,7 @@ pytest-cov==2.11.1
 As libs estão todas listadas no requirements.txt e pode ser instalado usando o pip conforme abaixo:
 
 ## Configuração
-O programa usa um arquivo de configuração exemplificado no arquivo src/config.example.json
+O programa usa um arquivo de configuração magic_formula/config.json
 ```JSON
 {
     "BRX100_URL":"https://statusinvest.com.br/indices/indice-brasil-100",
@@ -39,10 +44,7 @@ O programa usa um arquivo de configuração exemplificado no arquivo src/config.
     "POSTGRESQL_STRING": "postgresql+psycopg2://postgres:example@0.0.0.0/fmsdeinvestimento"
 }
 ```
-Esse arquivo deve ser usado como base para a criação do arquivo src/config.json
-```shell
-$ cp src/config.example.json src/config.json 
-```
+
 
 ### Diretamente
 Devem ser instaladas as dependencias usando os seguintes comandos abaixo: 
@@ -70,15 +72,26 @@ $ python3 -m pip install -r requirements.txt
 ### Usando o docker
 Usando o arquivo docker-compose.yml pode ser criada a imagem com o comando abaixo:
 ```bash
-$ docker-compose build
+docker-compose build
+```
+
+## Instalação via pip
+Tambem pode ser instalado via pip com o seguinte comando abaixo:
+```shell
+python3 -m pip install git+https://github.com/marinellirubens/magic_formula#egg=magic_formula==1.0.1
+```
+
+Ou usando o setup.py
+```shell
+python3 setup.py install
 ```
 
 
 ## Executando
 Podem ser verificados os comandos de usando o argumento -h:
 ```shell
-usage: stocks_greenblat_magic_formula.py [-h] [-V] [-t THREADS] [-i INDEX [INDEX ...]] [-ll LOG_LEVEL] [-e EBIT] [-m MARKET_CAP] [-q QTY]
-                                         [-d DATABASE]
+$ magic_formula -h
+usage: magic_formula [-h] [-V] [-t THREADS] [-o OUTPUT_FOLDER] [-i INDEX [INDEX ...]] [-ll LOG_LEVEL] [-e EBIT] [-m MARKET_CAP] [-q QTY] [-d DATABASE]
 
 Parses command.
 
@@ -87,6 +100,8 @@ optional arguments:
   -V, --version         Show program version
   -t THREADS, --threads THREADS
                         Max Number of threads
+  -o OUTPUT_FOLDER, --output_folder OUTPUT_FOLDER
+                        Path for output folder
   -i INDEX [INDEX ...], --index INDEX [INDEX ...]
                         Bovespa index (BRX100, IBOV, SMALL, IDIV)
   -ll LOG_LEVEL, --log_level LOG_LEVEL
@@ -101,7 +116,11 @@ optional arguments:
 
 O programa pode ser executado usando o seguinte comando
 ```bash
-$ python3 src/stocks_greenblat_magic_formula.py
+$ python3 magic_formula/magic_formula_main.py
+```
+Ou diretamente caso esteja instalado:
+```bash
+$ magic_formula 
 ```
 
 Ou pode ser executado com o Docker usando o comando abaixo:
