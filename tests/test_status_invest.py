@@ -4,16 +4,13 @@ import sys
 import unittest
 from unittest import mock
 
-import requests
-
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../tests')))
 
 
-from src.config import get_config, set_logger
-from src.status_invest import get_ibrx_info, get_ticker_roic_info
-
+from magic_formula.config import get_config, set_logger
+from magic_formula.status_invest import get_ibrx_info, get_ticker_roic_info
 from config_tests import STATUS_INVEST_URL_RETURN
 
 
@@ -41,10 +38,9 @@ class TestStocksGreenblatMagicFormula(unittest.TestCase):
         with mock.patch('requests.get', side_effect=mocked_requests_get):
             ticker_info = get_ibrx_info(config['BRX10_URL'], logger=test_logger)
             self.assertEqual({'B3SA3', 'PETR3'}, ticker_info)
-        
+
     def test_get_ticker_roic_info(self):
         config = get_config('tests/teste.json')
-        test_logger = set_logger()
 
         with mock.patch('requests.get', side_effect=mocked_requests_get):
             # teste = requests.get(config['STATUS_INVEST_URL']).content
