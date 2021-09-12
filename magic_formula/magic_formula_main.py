@@ -32,7 +32,8 @@ from magic_formula.config import get_arguments
 from magic_formula.status_invest import get_ticker_roic_info, get_ibrx_info
 from magic_formula.magic_formula_core import MagicFormula
 
-__VERSION__ = '1.0.0'
+
+__VERSION__ = '1.0.1'
 
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
