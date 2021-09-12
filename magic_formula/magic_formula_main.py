@@ -44,9 +44,16 @@ def main(logger: logging.Logger = logging.getLogger(__name__)) -> None:
     :return: None
     """
     global MAX_NUMBER_THREADS
+    global XLSX_PATH
     options = get_arguments()
     if options.version:
         show_version()
+
+    if options.output_folder:
+        if not os.path.exists(options.output_folder):
+            raise Exception(f'Folder informed must exist already, folder {options.output_folder} does not exists.')
+
+        XLSX_PATH = options.output_folder
 
     if not os.path.exists(XLSX_PATH):
         os.makedirs(XLSX_PATH)
