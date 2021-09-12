@@ -1,1 +1,1 @@
-pytest tests -v --cov=src --cov-report term-missing
+pytest tests -v --cov=magic_formula --cov-report term-missing
