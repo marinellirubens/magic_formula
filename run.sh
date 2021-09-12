@@ -1,3 +1,3 @@
 # source .venv/bin/activate
-python3 src/stocks_greenblat_magic_formula.py
+python3 magic_formula/magic_formula_main.py
 # deactivate

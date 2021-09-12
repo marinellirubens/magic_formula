@@ -1,1 +1,1 @@
-python src\stocks_greenblat_magic_formula.py
+python magic_formula\magic_formula_main.py

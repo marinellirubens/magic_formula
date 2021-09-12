@@ -1,9 +1,12 @@
+from __future__ import absolute_import
+
 import logging
 import logging.handlers
 import os
 import json
 import sys
 import argparse
+from argparse import Namespace
 
 
 def get_config(config_file: str = os.path.join(os.path.dirname(__file__), 'config.json')) -> dict:
@@ -20,7 +23,8 @@ def get_config(config_file: str = os.path.join(os.path.dirname(__file__), 'confi
     return config
 
 
-def set_logger(logger: logging.Logger = logging.Logger(__name__), log_file_name: str = 'stocks.log') -> logging.Logger:
+def set_logger(logger: logging.Logger = logging.Logger(__name__), log_file_name: str = 'stocks.log',
+               log_level: str = 'DEBUG') -> logging.Logger:
     """Sets the logger configuration
 
     :param logger: Logger variable
@@ -38,31 +42,44 @@ def set_logger(logger: logging.Logger = logging.Logger(__name__), log_file_name:
 
     handler.setFormatter(formatter)
     buff_handler.setFormatter(formatter)
-    
-    logger.setLevel('DEBUG')
+
+    logger.setLevel(log_level)
     logger.addHandler(handler)
     logger.addHandler(buff_handler)
-    
+
     return logger
 
 
-def get_arguments(args: list = sys.argv[1:]):
+def get_arguments(args: list = sys.argv[1:]) -> Namespace:
     """Parse argument on command line execution
 
     :param args: arguments to be parsed
     :return: returns the options parsed
     """
     parser = argparse.ArgumentParser(description='Parses command.')
-    parser.add_argument('-V', '--version', help='Show program version', action='store_true')
-    parser.add_argument('-t', '--threads', help='Max Number of threads', action='store', type=int, default=10)
+    parser.add_argument(
+        '-V', '--version', help='Show program version',
+        action='store_true'
+    )
+
+    parser.add_argument(
+        '-t', '--threads', help='Max Number of threads',
+        action='store', type=int, default=10
+    )
+
     parser.add_argument(
         '-i', '--index', help='Bovespa index (BRX100, IBOV, SMALL, IDIV)',
         action='store', type=str, default=["BRX100"], nargs="+"
     )
 
     parser.add_argument(
+        '-ll', '--log_level', help='Log level',
+        action='store', type=str, default="INFO"
+    )
+
+    parser.add_argument(
         '-e', '--ebit', help='Minimun ebit to be considered',
-        action='store', type=int, default=0
+        action='store', type=int, default=1
     )
 
     parser.add_argument(
@@ -70,13 +87,15 @@ def get_arguments(args: list = sys.argv[1:]):
         default=0
     )
 
-    parser.add_argument('-q', '--qty', help='Quantity of stocks to be exported.', action='store',
+    parser.add_argument(
+        '-q', '--qty', help='Quantity of stocks to be exported.', action='store',
         type=int, default=15
     )
 
-    parser.add_argument('-d', '--database', help='Send information to a database[POSTGRESQL].', action='store',
+    parser.add_argument(
+        '-d', '--database', help='Send information to a database[POSTGRESQL].', action='store',
         type=str
     )
-    
+
     options = parser.parse_args(args)
     return options

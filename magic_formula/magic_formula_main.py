@@ -1,14 +1,17 @@
+from __future__ import absolute_import
+
 """Module to take info from yahoo finance and status invest"""
 # TODO: Change into a service
-# TODO: Include possibilite to use all bovespa stocks
-# TODO: Include the possibility to read other specific indexes
 # TODO: Improve tests
 # TODO: Change the filters to make then optional so the formula is closer \
 # to pure magic formula
 # TODO: Improve the readme.md
 # TODO: Improve the sheet for better undestanding the output
 # TODO: Improve the coverage of the tests
+# TODO: Changes on main function to split responsabilities
+# TODO: Include folder on cli
 
+from argparse import Namespace
 import datetime
 import logging
 import logging.handlers
@@ -20,22 +23,24 @@ import pandas
 from pandas import DataFrame
 import sqlalchemy
 
-from config import get_config
-from config import set_logger
-from config import get_arguments
-from status_invest import get_ticker_roic_info, get_ibrx_info
-from magic_formula import MagicFormula
+from magic_formula.config import get_config
+from magic_formula.config import set_logger
+from magic_formula.config import get_arguments
+from magic_formula.status_invest import get_ticker_roic_info, get_ibrx_info
+from magic_formula.magic_formula_core import MagicFormula
 
-__VERSION__ = '0.1.0'
+__VERSION__ = '1.0.0'
 
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 
 
-def main(logger: logging.Logger = logging.getLogger(__name__)):
-    """Main method """
+def main(logger: logging.Logger = logging.getLogger(__name__)) -> None:
+    """Main method
+
+    :return: None
+    """
     global MAX_NUMBER_THREADS
-    # TODO: Integrate CLI to the system
     options = get_arguments()
     if options.version:
         show_version()
@@ -43,14 +48,14 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     if not os.path.exists(XLSX_PATH):
         os.makedirs(XLSX_PATH)
 
-    logger = set_logger(logger)
+    logger = set_logger(logger, log_level=options.log_level)
     config = get_config()
 
     if not isinstance(options.index, list):
         options.index = [options.index, ]
 
     possible_indexes = ['BRX100', 'IBOV', 'SMALL', 'IDIV']
-    if not all(index in possible_indexes  for index in options.index):
+    if not all(index in possible_indexes for index in options.index):
         logger.error(f'Option {options.index} invalid for index.')
         exit(1)
 
@@ -62,7 +67,7 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
     for index in options.index:
         stock_tickers.update(get_ibrx_info(config[f'{index}_URL'], logger))
 
-    tickers_df = process_tickers(stock_tickers, roic_index_info, logger)
+    tickers_df = process_tickers(stock_tickers, roic_index_info, logger, options)
     tickers_df = sort_dataframe(tickers_df, logger)
 
     export_dataframe_to_excel(tickers_df, logger, options.qty)
@@ -73,19 +78,26 @@ def main(logger: logging.Logger = logging.getLogger(__name__)):
         export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
 
 
-def show_version():
+def show_version() -> None:
+    """Prints program version
+
+    :return: None
+    """
     print(f'MagicFormula v{__VERSION__}')
     exit(0)
 
 
-def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logger,
-    number_of_lines: int = None) -> None:
-    """Exportts the ticker dataframe into an excel file
+def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
+                              logger: logging.Logger,
+                              number_of_lines: int = None) -> None:
+    """Exports the ticker dataframe into an excel file
 
     :param tickers_df: Dataframe with the stocks information
     :type tickers_df: pandas.DataFrame
     :param logger: Logger object
     :type logger: logging.Logger
+    :param number_of_lines: Number of lines to be exported on the excel file
+    :type number_of_lines: int
     :return: None
     """
     excel_file_name = \
@@ -95,7 +107,52 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logg
         tickers_df = tickers_df.head(number_of_lines)
 
     logger.info(f'Exporting data into excel {excel_file_name}')
-    tickers_df.to_excel(
+
+    excel_df = tickers_df[[
+        'symbol',
+        'roic',
+        'current_price',
+        'dividend_yield',
+        'market_cap',
+        'patrimonio_liquido',
+        'ebit',
+        'total_debt',
+        'total_cash',
+        'shares_outstanding',
+        'long_name',
+        'short_name',
+        'regular_market_time',
+        'buy_recomendation',
+        'sell_recomendation',
+        'earning_yield_index',
+        'magic_index',
+        'earning_yield',
+        'roic_index_number',
+    ]]
+
+    excel_df.columns = [
+        'symbol',
+        'roic',
+        'current_price',
+        'dividend_yield (%)',
+        'market_cap',
+        'net_worth',
+        'ebit',
+        'total_debt',
+        'total_cash',
+        'shares_outstanding',
+        'long_name',
+        'short_name',
+        'regular_market_time',
+        'buy_recomendation',
+        'sell_recomendation',
+        'earning_yield_index',
+        'magic_index',
+        'earning_yield',
+        'roic_index_number',
+    ]
+
+    excel_df.to_excel(
         excel_writer=excel_file_name,
         sheet_name='stocks', index=False, engine='openpyxl',
         freeze_panes=(1, 0)
@@ -103,16 +160,20 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame, logger: logging.Logg
 
 
 def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger, connection_string: str,
-    number_of_lines: int = None) -> None:
+                            number_of_lines: int = None) -> None:
     """Exportts the ticker dataframe into an postgresql
 
     :param tickers_df: Dataframe with the stocks information
     :type tickers_df: pandas.DataFrame
     :param logger: Logger object
     :type logger: logging.Logger
+    :param connection_string: Database connection string
+    :type connection_string: str
+    :param number_of_lines: Number of lines to be exported on the excel file
+    :type number_of_lines: int
     :return: None
     """
-    logger.info(f'Exporting data into postgresql.')
+    logger.info('Exporting data into postgresql.')
     try:
         if number_of_lines:
             tickers_df = tickers_df.head(number_of_lines)
@@ -136,9 +197,9 @@ def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pand
     """
     logger.info('Sorting dataframe')
     tickers_df = tickers_df.sort_values('roic', ascending=False)
-    
+
     tickers_df = fill_roic_index_number_field(tickers_df, logger)
-    
+
     tickers_df = tickers_df.sort_values('earning_yield', ascending=True)
 
     tickers_df = fill_earning_yield_field(tickers_df, logger)
@@ -159,6 +220,7 @@ def fill_roic_index_number_field(tickers_df: pandas.DataFrame, logger: logging.L
     :return: Dataframe with field roic_index_number filled
     :rtype: pandas.DataFrame
     """
+    logger.debug('Filling field roic_index_number')
     tickers_df['roic_index_number'] = np.arange(tickers_df['roic'].count())
 
     return tickers_df
@@ -174,7 +236,7 @@ def fill_earning_yield_field(tickers_df: pandas.DataFrame, logger: logging.Logge
     :return: Dataframe with field earning_yield_index filled
     :rtype: pandas.DataFrame
     """
-    logger.info('Filling field earning_yield_index')
+    logger.debug('Filling field earning_yield_index')
     tickers_df['earning_yield_index'] = \
         np.arange(tickers_df['earning_yield'].count())
 
@@ -191,6 +253,7 @@ def fill_magic_index_field(tickers_df: pandas.DataFrame, logger: logging.Logger)
     :return: Dataframe with field magic_index filled
     :rtype: pandas.DataFrame
     """
+    logger.debug('Filling field magic_index')
     tickers_df['magic_index'] = \
         tickers_df['earning_yield_index'] + tickers_df['roic_index_number']
 
@@ -199,7 +262,8 @@ def fill_magic_index_field(tickers_df: pandas.DataFrame, logger: logging.Logger)
 
 def return_earning_yield(symbol: str, df: DataFrame,
                          index: int, roic_index: dict,
-                         logger: logging.Logger) -> float:
+                         logger: logging.Logger,
+                         options: Namespace) -> float:
     """Returns stock earning yield.
 
     :param symbol: Ticker symbol
@@ -215,7 +279,8 @@ def return_earning_yield(symbol: str, df: DataFrame,
     :return: Earning yeld of the current stock
     :rtype: float
     """
-    stock = MagicFormula(symbol, logger)
+    # TODO: Change function name to be more precise with its real behaviour
+    stock = MagicFormula(symbol, logger, ebit_min=options.ebit, market_cap_min=options.market_cap)
     if stock.get_ticker_info() is None:
         return False
 
@@ -239,14 +304,15 @@ def return_earning_yield(symbol: str, df: DataFrame,
             stock.regular_market_time, stock.market_cap,
             stock.total_stockholder_equity, stock.ebit, stock.total_debt,
             stock.total_cash,
-            stock.shares_outstanding, stock.long_name, stock.short_name
+            stock.shares_outstanding, stock.long_name, stock.short_name, stock.dividend_yield
         ]
 
     return earning_yield
 
 
 def process_tickers(stock_tickers: set, roic_index: dict,
-                    logger: logging.Logger) -> DataFrame:
+                    logger: logging.Logger,
+                    options: Namespace) -> DataFrame:
     """Process tickers informations and return a pandas Dataframe
 
     :param stock_tickers: List of the stock tickers
@@ -263,7 +329,7 @@ def process_tickers(stock_tickers: set, roic_index: dict,
             'roic', 'buy_recomendation', 'sell_recomendation', 'current_price',
             'regular_market_time', 'market_cap', 'patrimonio_liquido', 'ebit',
             'total_debt', 'total_cash', 'shares_outstanding', 'long_name',
-            'short_name'
+            'short_name', 'dividend_yield'
         ]
     )
 
@@ -277,9 +343,9 @@ def process_tickers(stock_tickers: set, roic_index: dict,
 
         thread = threading.Thread(
             target=return_earning_yield,
-            args=(ticker + '.SA', df, index, roic_index, logger, )
+            args=(ticker + '.SA', df, index, roic_index, logger, options, )
         )
-        logger.info(f'Processing ticker: {ticker} on thread {thread}')
+        logger.debug(f'Processing ticker: {ticker} on thread {thread}')
 
         thread.daemon = False
         thread.start()
