@@ -24,6 +24,8 @@ import pandas
 from pandas import DataFrame
 import sqlalchemy
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
 from magic_formula.config import get_config
 from magic_formula.config import set_logger
 from magic_formula.config import get_arguments
