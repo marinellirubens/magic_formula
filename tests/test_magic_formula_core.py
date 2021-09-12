@@ -8,7 +8,7 @@ from unittest import mock
 
 
 sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+    os.path.abspath(os.path.join(os.path.dirname(__file__), '../magic_formula')))
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../tests')))
 

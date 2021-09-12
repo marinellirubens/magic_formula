@@ -5,7 +5,7 @@ import unittest
 from unittest import mock
 
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../magic_formula')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../tests')))
 
 
@@ -46,4 +46,7 @@ class TestStocksGreenblatMagicFormula(unittest.TestCase):
             # teste = requests.get(config['STATUS_INVEST_URL']).content
             # assert 'a' == teste
             roic_info = get_ticker_roic_info(config['STATUS_INVEST_URL'])
-            self.assertEqual({'CPLE6': {'roic_index': 0, 'roic': 10.77}, 'CAMB3': {'roic_index': 1, 'roic': 1.58}}, roic_info)
+            self.assertEqual(
+                {'CPLE6': {'roic_index': 0, 'roic': 10.77}, 'CAMB3': {'roic_index': 1, 'roic': 1.58}},
+                roic_info
+            )
