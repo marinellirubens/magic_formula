@@ -7,9 +7,9 @@ import logging
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 
-from src.config import get_config
-from src.config import set_logger
-from src.config import get_arguments
+from magic_formula.config import get_config
+from magic_formula.config import set_logger
+from magic_formula.config import get_arguments
 
 
 def scenario_logger():
