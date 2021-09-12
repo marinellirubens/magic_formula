@@ -1,15 +1,11 @@
 from __future__ import absolute_import
 
 """Module to take info from yahoo finance and status invest"""
-# TODO: Change into a service
-# TODO: Improve tests
 # TODO: Change the filters to make then optional so the formula is closer \
 # to pure magic formula
 # TODO: Improve the readme.md
-# TODO: Improve the sheet for better undestanding the output
 # TODO: Improve the coverage of the tests
 # TODO: Changes on main function to split responsabilities
-# TODO: Include folder on cli
 
 from argparse import Namespace
 import datetime
