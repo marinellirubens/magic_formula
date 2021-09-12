@@ -1,21 +1,18 @@
 from __future__ import absolute_import
 
 """Module to take info from yahoo finance and status invest"""
-# TODO: Change into a service
-# TODO: Improve tests
 # TODO: Change the filters to make then optional so the formula is closer \
 # to pure magic formula
 # TODO: Improve the readme.md
-# TODO: Improve the sheet for better undestanding the output
 # TODO: Improve the coverage of the tests
 # TODO: Changes on main function to split responsabilities
-# TODO: Include folder on cli
 
 from argparse import Namespace
 import datetime
 import logging
 import logging.handlers
 import os
+import sys
 import threading
 
 import numpy as np
@@ -23,13 +20,16 @@ import pandas
 from pandas import DataFrame
 import sqlalchemy
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
 from magic_formula.config import get_config
 from magic_formula.config import set_logger
 from magic_formula.config import get_arguments
 from magic_formula.status_invest import get_ticker_roic_info, get_ibrx_info
 from magic_formula.magic_formula_core import MagicFormula
 
-__VERSION__ = '1.0.0'
+
+__VERSION__ = '1.0.1'
 
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
@@ -41,9 +41,16 @@ def main(logger: logging.Logger = logging.getLogger(__name__)) -> None:
     :return: None
     """
     global MAX_NUMBER_THREADS
+    global XLSX_PATH
     options = get_arguments()
     if options.version:
         show_version()
+
+    if options.output_folder:
+        if not os.path.exists(options.output_folder):
+            raise Exception(f'Folder informed must exist already, folder {options.output_folder} does not exists.')
+
+        XLSX_PATH = options.output_folder
 
     if not os.path.exists(XLSX_PATH):
         os.makedirs(XLSX_PATH)
@@ -100,8 +107,8 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
     :type number_of_lines: int
     :return: None
     """
-    excel_file_name = \
-        f'{XLSX_PATH}stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}.xlsx'
+    excel_name = f'stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}.xlsx'
+    excel_file_name = os.path.join(XLSX_PATH, excel_name)
 
     if number_of_lines:
         tickers_df = tickers_df.head(number_of_lines)

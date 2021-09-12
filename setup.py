@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='magic_formula',
-    version='1.0.0',
+    version='1.0.1',
     packages=find_packages(),
     data_files=[('magic_formula', ['magic_formula/config.json'])],
     entry_points={

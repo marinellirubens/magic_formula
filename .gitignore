@@ -10,3 +10,6 @@ xlsx_files
 .idea
 *.coverage*
 venv
+*.egg-info
+build/
+dist/
