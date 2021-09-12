@@ -103,8 +103,8 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
     :type number_of_lines: int
     :return: None
     """
-    excel_file_name = \
-        f'{XLSX_PATH}stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}.xlsx'
+    excel_name = f'stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}.xlsx'
+    excel_file_name = os.path.join(XLSX_PATH, excel_name)
 
     if number_of_lines:
         tickers_df = tickers_df.head(number_of_lines)
