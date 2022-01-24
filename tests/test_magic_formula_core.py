@@ -182,7 +182,7 @@ class TestMagicFormula(unittest.TestCase):
 
         self.assertIsNotNone(ey)
         self.assertGreater(ey, 0)
-        self.assertEqual(ey, (round((self.wege.tev / self.wege.ebit), 2)))
+        self.assertEqual(ey, (round((self.wege.ebit / self.wege.tev), 2)))
 
     def test_valid_ticker_info(self):
         with mock.patch('magic_formula.magic_formula_core.MagicFormula.fill_ticker_info', mock_fill_ticker_info):
