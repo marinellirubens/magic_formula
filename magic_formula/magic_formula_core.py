@@ -123,9 +123,18 @@ class MagicFormula():
 
     def fill_ebit(self) -> None:
         """Fill the variable ebit with information from the dict all_modules"""
-        self.ebit = \
-            self.all_modules[
-                'incomeStatementHistory']['incomeStatementHistory'][0]['ebit']
+        income_statement_history = self.all_modules.get('incomeStatementHistory', {})
+        income_statement_history_quarterly = income_statement_history.get(
+            'incomeStatementHistoryQuarterly', {})
+
+        if income_statement_history_quarterly == {}:
+            income_statement_history_quarterly = income_statement_history.get(
+                'incomeStatementHistory', {})
+
+        if income_statement_history_quarterly == {}:
+            self.ebit = 0
+
+        self.ebit = income_statement_history_quarterly[0].get('ebit', 0)
 
     def get_recomendation_trend(self) -> tuple:
         """Returns a tuple with the information of the number of
@@ -249,4 +258,4 @@ class MagicFormula():
         :return: Current earning yeld
         :rtype: float
         """
-        return round((self.tev / self.ebit), 2)
+        return round((self.ebit / self.tev), 2)

@@ -13,3 +13,4 @@ venv
 *.egg-info
 build/
 dist/
+cov.xml
