@@ -5,6 +5,7 @@ import logging
 import bs4
 import pandas
 import numpy as np
+import io
 
 
 def get_ibrx_info(url: str, logger: logging.Logger) -> set:
@@ -37,7 +38,7 @@ def get_ticker_roic_info(url: str) -> dict:
     """
     tickers_info = requests.get(url).content
 
-    df: pandas.DataFrame = pandas.read_json(tickers_info)
+    df: pandas.DataFrame = pandas.read_json(io.StringIO(tickers_info.decode('utf-8')))
     df = df.sort_values('roic', ascending=False)
 
     df['roic'] = df['roic'].replace(np.NaN, 0)
