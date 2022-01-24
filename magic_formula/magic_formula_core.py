@@ -258,4 +258,4 @@ class MagicFormula():
         :return: Current earning yeld
         :rtype: float
         """
-        return round((self.tev / self.ebit), 2)
+        return round((self.ebit / self.tev), 2)
