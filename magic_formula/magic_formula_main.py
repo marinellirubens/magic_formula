@@ -1,3 +1,4 @@
+"""Module to take info from yahoo finance and status invest"""
 from __future__ import absolute_import
 
 """Module to take info from yahoo finance and status invest"""
