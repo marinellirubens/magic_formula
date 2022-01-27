@@ -1,12 +1,13 @@
 """Module to connect on status invest and get informations"""
 from __future__ import absolute_import
 
-import requests
-import logging
-import bs4
-import pandas
-import numpy as np
 import io
+import logging
+
+import bs4
+import numpy as np
+import pandas
+import requests
 
 
 def get_ibrx_info(url: str, logger: logging.Logger) -> set:
