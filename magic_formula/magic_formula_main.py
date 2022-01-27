@@ -13,6 +13,7 @@ import numpy as np
 import pandas
 import sqlalchemy
 from pandas import DataFrame
+from enum import Enum
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
@@ -28,6 +29,59 @@ __VERSION__ = '1.0.1'
 
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
+
+
+class DataframColums(Enum):
+    EXCEL_DF_COLUMNS = [
+        'symbol',
+        'roic',
+        'current_price',
+        'dividend_yield',
+        'market_cap',
+        'patrimonio_liquido',
+        'ebit',
+        'total_debt',
+        'total_cash',
+        'shares_outstanding',
+        'long_name',
+        'short_name',
+        'regular_market_time',
+        'buy_recomendation',
+        'sell_recomendation',
+        'earning_yield_index',
+        'magic_index',
+        'earning_yield',
+        'roic_index_number',
+    ]
+    EXCEL_DF_COLUMNS_NAMES = [
+        'symbol',
+        'roic',
+        'current_price',
+        'dividend_yield (%)',
+        'market_cap',
+        'net_worth',
+        'ebit',
+        'total_debt',
+        'total_cash',
+        'shares_outstanding',
+        'long_name',
+        'short_name',
+        'regular_market_time',
+        'buy_recomendation',
+        'sell_recomendation',
+        'earning_yield_index',
+        'magic_index',
+        'earning_yield',
+        'roic_index_number',
+    ]
+    PROCESS_TICKERS_COLUMNS = [
+        'symbol', 'magic_index', 'earning_yield', 'roic_index_number',
+        'roic', 'buy_recomendation', 'sell_recomendation', 'current_price',
+        'regular_market_time', 'market_cap', 'patrimonio_liquido', 'ebit',
+        'total_debt', 'total_cash', 'shares_outstanding', 'long_name',
+        'short_name', 'dividend_yield'
+    ]
+
 
 # TODO: Changes on main function to split responsabilities
 def main() -> None:
@@ -112,49 +166,8 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
 
     logger.info(f'Exporting data into excel {excel_file_name}')
 
-    excel_df = tickers_df[[
-        'symbol',
-        'roic',
-        'current_price',
-        'dividend_yield',
-        'market_cap',
-        'patrimonio_liquido',
-        'ebit',
-        'total_debt',
-        'total_cash',
-        'shares_outstanding',
-        'long_name',
-        'short_name',
-        'regular_market_time',
-        'buy_recomendation',
-        'sell_recomendation',
-        'earning_yield_index',
-        'magic_index',
-        'earning_yield',
-        'roic_index_number',
-    ]]
-
-    excel_df.columns = [
-        'symbol',
-        'roic',
-        'current_price',
-        'dividend_yield (%)',
-        'market_cap',
-        'net_worth',
-        'ebit',
-        'total_debt',
-        'total_cash',
-        'shares_outstanding',
-        'long_name',
-        'short_name',
-        'regular_market_time',
-        'buy_recomendation',
-        'sell_recomendation',
-        'earning_yield_index',
-        'magic_index',
-        'earning_yield',
-        'roic_index_number',
-    ]
+    excel_df = tickers_df[DataframColums.EXCEL_DF_COLUMNS.value]
+    excel_df.columns = DataframColums.EXCEL_DF_COLUMNS_NAMES.value
 
     excel_df.to_excel(
         excel_writer=excel_file_name,
@@ -345,13 +358,7 @@ def process_tickers(stock_tickers: set, roic_index: dict,
     """
     logger.info('Creating pandas Df')
     data_frame = pandas.DataFrame(
-        columns=[
-            'symbol', 'magic_index', 'earning_yield', 'roic_index_number',
-            'roic', 'buy_recomendation', 'sell_recomendation', 'current_price',
-            'regular_market_time', 'market_cap', 'patrimonio_liquido', 'ebit',
-            'total_debt', 'total_cash', 'shares_outstanding', 'long_name',
-            'short_name', 'dividend_yield'
-        ]
+        columns=DataframColums.PROCESS_TICKERS_COLUMNS.value
     )
 
     threads = []
