@@ -1,3 +1,4 @@
+"""Module to connect on status invest and get informations"""
 from __future__ import absolute_import
 
 import requests
