@@ -64,7 +64,7 @@ def main(logger: logging.Logger = logging.getLogger(__name__)) -> None:
     possible_indexes = ['BRX100', 'IBOV', 'SMALL', 'IDIV']
     if not all(index in possible_indexes for index in options.index):
         logger.error(f'Option {options.index} invalid for index.')
-        exit(1)
+        sys.exit(1)
 
     MAX_NUMBER_THREADS = options.threads
     roic_index_info = get_ticker_roic_info(
@@ -91,7 +91,7 @@ def show_version() -> None:
     :return: None
     """
     print(f'MagicFormula v{__VERSION__}')
-    exit(0)
+    sys.exit(0)
 
 
 def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
