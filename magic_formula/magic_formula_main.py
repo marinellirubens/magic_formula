@@ -1,33 +1,27 @@
 """Module to take info from yahoo finance and status invest"""
 from __future__ import absolute_import
 
-"""Module to take info from yahoo finance and status invest"""
-# TODO: Change the filters to make then optional so the formula is closer \
-# to pure magic formula
-# TODO: Improve the readme.md
-# TODO: Improve the coverage of the tests
-# TODO: Changes on main function to split responsabilities
-
-from argparse import Namespace
 import datetime
 import logging
 import logging.handlers
 import os
 import sys
 import threading
+from argparse import Namespace
 
 import numpy as np
 import pandas
-from pandas import DataFrame
 import sqlalchemy
+from pandas import DataFrame
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 from magic_formula.config import get_config
-from magic_formula.config import set_logger
 from magic_formula.config import get_arguments
-from magic_formula.status_invest import get_ticker_roic_info, get_ibrx_info
+from magic_formula.config import set_logger
 from magic_formula.magic_formula_core import MagicFormula
+from magic_formula.status_invest import get_ibrx_info
+from magic_formula.status_invest import get_ticker_roic_info
 
 
 __VERSION__ = '1.0.1'
