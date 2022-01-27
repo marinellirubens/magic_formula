@@ -29,7 +29,7 @@ def get_config(config_file: str = None) -> dict:
     if not config_file:
         return CONFIG
 
-    with open(config_file) as file:
+    with open(config_file, encoding='UTF-8') as file:
         config = json.load(file)
 
     return config
