@@ -22,8 +22,9 @@ def get_ibrx_info(url: str, logger: logging.Logger) -> set:
     """
     logger.info(f'Processing url: {url}')
 
-    bs = bs4.BeautifulSoup(requests.get(url, verify=True).content, "html.parser")
-    tickers_ibrx100 = set([x.text for x in list(bs.find_all("span", {"class": "ticker"}))])
+    beatiful_soup = bs4.BeautifulSoup(requests.get(url, verify=True).content, "html.parser")
+    tickers_ibrx100 = \
+        set([x.text for x in list(beatiful_soup.find_all("span", {"class": "ticker"}))])
 
     logger.info(f'Returned {len(tickers_ibrx100)} tickers')
 
@@ -40,13 +41,13 @@ def get_ticker_roic_info(url: str) -> dict:
     """
     tickers_info = requests.get(url).content
 
-    df: pandas.DataFrame = pandas.read_json(io.StringIO(tickers_info.decode('utf-8')))
-    df = df.sort_values('roic', ascending=False)
+    roic_info_df: pandas.DataFrame = pandas.read_json(io.StringIO(tickers_info.decode('utf-8')))
+    roic_info_df = roic_info_df.sort_values('roic', ascending=False)
 
-    df['roic'] = df['roic'].replace(np.NaN, 0)
-    df['roic_index'] = [x for x, y in enumerate(df['roic'].iteritems())]
+    roic_info_df['roic'] = roic_info_df['roic'].replace(np.NaN, 0)
+    roic_info_df['roic_index'] = [x for x, y in enumerate(roic_info_df['roic'].iteritems())]
 
-    df = df[['ticker', 'roic_index', 'roic']]
-    df.set_index(['ticker'], inplace=True)
+    roic_info_df = roic_info_df[['ticker', 'roic_index', 'roic']]
+    roic_info_df.set_index(['ticker'], inplace=True)
 
-    return df.to_dict('index')
+    return roic_info_df.to_dict('index')
