@@ -29,8 +29,8 @@ __VERSION__ = '1.0.1'
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 
-
-def main(logger: logging.Logger = logging.getLogger(__name__)) -> None:
+# TODO: Changes on main function to split responsabilities
+def main() -> None:
     """Main method
 
     :return: None
@@ -43,13 +43,15 @@ def main(logger: logging.Logger = logging.getLogger(__name__)) -> None:
 
     if options.output_folder:
         if not os.path.exists(options.output_folder):
-            raise Exception(f'Folder informed must exist already, folder {options.output_folder} does not exists.')
+            raise Exception('Folder informed must exist already, ' + \
+                            f'folder {options.output_folder} does not exists.')
 
         XLSX_PATH = options.output_folder
 
     if not os.path.exists(XLSX_PATH):
         os.makedirs(XLSX_PATH)
 
+    logger = logging.getLogger(__name__)
     logger = set_logger(logger, log_level=options.log_level)
     config = get_config()
 
@@ -161,7 +163,8 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
     )
 
 
-def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger, connection_string: str,
+def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger,
+                            connection_string: str,
                             number_of_lines: int = None) -> None:
     """Exportts the ticker dataframe into an postgresql
 
@@ -187,8 +190,8 @@ def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger
 
 
 def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
-    """Sorts the dataframe and fill the fields roic_index_number, earning_yield_field, magic_index_field
-    Those fields depends on the sorting to be generates
+    """Sorts the dataframe and fill the fields roic_index_number, earning_yield_field,
+    magic_index_field Those fields depends on the sorting to be generates
 
     :param tickers_df: Dataframe with the stocks information
     :type tickers_df: pandas.DataFrame
@@ -212,7 +215,8 @@ def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pand
     return tickers_df
 
 
-def fill_roic_index_number_field(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
+def fill_roic_index_number_field(tickers_df: pandas.DataFrame,
+                                 logger: logging.Logger) -> pandas.DataFrame:
     """Fill the field roic_index_number based on roic field
 
     :param tickers_df: Dataframe with the stocks information
@@ -228,7 +232,8 @@ def fill_roic_index_number_field(tickers_df: pandas.DataFrame, logger: logging.L
     return tickers_df
 
 
-def fill_earning_yield_field(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
+def fill_earning_yield_field(tickers_df: pandas.DataFrame,
+                             logger: logging.Logger) -> pandas.DataFrame:
     """Fill the field earning_yield_index based on earning_yield field
 
     :param tickers_df: Dataframe with the stocks information
@@ -245,7 +250,8 @@ def fill_earning_yield_field(tickers_df: pandas.DataFrame, logger: logging.Logge
     return tickers_df
 
 
-def fill_magic_index_field(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
+def fill_magic_index_field(tickers_df: pandas.DataFrame,
+                           logger: logging.Logger) -> pandas.DataFrame:
     """Fill the field magic_index based on earning_yield_index and roic_index_number
 
     :param tickers_df: Dataframe with the stocks information
@@ -262,10 +268,12 @@ def fill_magic_index_field(tickers_df: pandas.DataFrame, logger: logging.Logger)
     return tickers_df
 
 
-def return_earning_yield(symbol: str, df: DataFrame,
-                         index: int, roic_index: dict,
-                         logger: logging.Logger,
-                         options: Namespace) -> float:
+def process_earning_yield_calculation(
+        symbol: str, data_frame: DataFrame,
+        index: int, roic_index: dict,
+        logger: logging.Logger,
+        options: Namespace
+    ) -> float:
     """Returns stock earning yield.
 
     :param symbol: Ticker symbol
@@ -281,12 +289,12 @@ def return_earning_yield(symbol: str, df: DataFrame,
     :return: Earning yeld of the current stock
     :rtype: float
     """
-    # TODO: Change function name to be more precise with its real behaviour
-    stock = MagicFormula(symbol, logger, ebit_min=options.ebit, market_cap_min=options.market_cap)
+    stock: MagicFormula = MagicFormula(symbol, logger, ebit_min=options.ebit,
+                                       market_cap_min=options.market_cap)
     if stock.get_ticker_info() is None:
         return False
 
-    if not stock.get_ticker_data():
+    if not stock.valid_ticker_data():
         return False
 
     stock.calculate_tev()
@@ -299,14 +307,25 @@ def return_earning_yield(symbol: str, df: DataFrame,
     if earning_yield > 0:
         logger.debug(f'Inserting ticker: {symbol} on dataframe')
 
-        df.loc[str(index)] = [
-            symbol[:-3], magic_index, earning_yield, roic_index_number, roic,
-            stock.recommendation_trend[0],
-            stock.recommendation_trend[1], stock.current_price,
-            stock.regular_market_time, stock.market_cap,
-            stock.total_stockholder_equity, stock.ebit, stock.total_debt,
-            stock.total_cash,
-            stock.shares_outstanding, stock.long_name, stock.short_name, stock.dividend_yield
+        data_frame.loc[str(index)] = [
+            symbol[:-3],
+            magic_index,
+            earning_yield,
+            roic_index_number,
+            roic,
+            stock.ticker_info.recommendation_trend.buy_counter,
+            stock.ticker_info.recommendation_trend.sell_counter,
+            stock.ticker_info.current_price,
+            stock.ticker_info.regular_market_time,
+            stock.ticker_info.market_cap,
+            stock.ticker_info.total_stockholder_equity,
+            stock.ticker_info.ebit,
+            stock.ticker_info.total_debt,
+            stock.ticker_info.total_cash,
+            stock.ticker_info.shares_outstanding,
+            stock.ticker_info.long_name,
+            stock.ticker_info.short_name,
+            stock.ticker_info.dividend_yield
         ]
 
     return earning_yield
@@ -325,7 +344,7 @@ def process_tickers(stock_tickers: set, roic_index: dict,
     :rtype: pandas.DataFrame
     """
     logger.info('Creating pandas Df')
-    df = pandas.DataFrame(
+    data_frame = pandas.DataFrame(
         columns=[
             'symbol', 'magic_index', 'earning_yield', 'roic_index_number',
             'roic', 'buy_recomendation', 'sell_recomendation', 'current_price',
@@ -344,8 +363,8 @@ def process_tickers(stock_tickers: set, roic_index: dict,
             threads = []
 
         thread = threading.Thread(
-            target=return_earning_yield,
-            args=(ticker + '.SA', df, index, roic_index, logger, options, )
+            target=process_earning_yield_calculation,
+            args=(ticker + '.SA', data_frame, index, roic_index, logger, options, )
         )
         logger.debug(f'Processing ticker: {ticker} on thread {thread}')
 
@@ -358,9 +377,8 @@ def process_tickers(stock_tickers: set, roic_index: dict,
             thread.join()
         threads = []
 
-    return df
+    return data_frame
 
 
 if __name__ == '__main__':
-    logger = logging.getLogger(__name__)
-    main(logger)
+    main()
