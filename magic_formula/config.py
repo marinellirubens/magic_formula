@@ -62,12 +62,15 @@ def set_logger(logger: logging.Logger = logging.Logger(__name__), log_file_name:
     return logger
 
 
-def get_arguments(args: list = sys.argv[1:]) -> Namespace:
+def get_arguments(args: list = None) -> Namespace:
     """Parse argument on command line execution
 
     :param args: arguments to be parsed
     :return: returns the options parsed
     """
+    if args is None:
+        args = sys.argv[1:]
+
     parser = argparse.ArgumentParser(description='Parses command.')
     parser.add_argument(
         '-V', '--version', help='Show program version',
