@@ -19,7 +19,7 @@ def scenario_logger():
 
 
 class TestMainModule(unittest.TestCase):
-    @mock.patch('builtins.exit')
+    @mock.patch('sys.exit')
     @mock.patch('builtins.print')
     def test_print_version(self, mock_print, mock_exit):
         green.show_version()
