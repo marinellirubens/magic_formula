@@ -25,7 +25,7 @@ from magic_formula.status_invest import get_ibrx_info
 from magic_formula.status_invest import get_ticker_roic_info
 
 
-__VERSION__ = '1.0.1'
+__VERSION__ = '1.0.3'
 
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
