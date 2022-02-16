@@ -218,7 +218,7 @@ def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pand
 
     tickers_df = fill_roic_index_number_field(tickers_df, logger)
 
-    tickers_df = tickers_df.sort_values('earning_yield', ascending=True)
+    tickers_df = tickers_df.sort_values('earning_yield', ascending=False)
 
     tickers_df = fill_earning_yield_field(tickers_df, logger)
     tickers_df = fill_magic_index_field(tickers_df, logger)

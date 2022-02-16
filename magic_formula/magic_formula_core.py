@@ -237,6 +237,9 @@ class TickerInfoBuilder:
         if income_statement_history_quarterly == {}:
             return 0
 
+        if income_statement_history_quarterly.__len__() < 1:
+            return 0
+
         ebit = income_statement_history_quarterly[0].get('ebit', 0)
 
         return ebit
@@ -249,7 +252,7 @@ class TickerInfoBuilder:
         :return: Returns the market cap
         :rtype: float
         """
-        market_cap = self.ticker.all_modules.get(self.symbol).get('price', {}).get('marketCap', 0)
+        market_cap = self.get_all_modules().get(self.symbol, {}).get('price', {}).get('marketCap', 0)
         return market_cap
 
     def get_total_cash(self) -> float:
@@ -281,7 +284,7 @@ class TickerInfoBuilder:
         :return: Returns the total debt
         :rtype: float
         """
-        return self.get_financial_data().get('totalDebt')
+        return self.get_financial_data().get('totalDebt', 0)
 
     def get_long_name(self) -> str:
         """Fills variable long_name
@@ -334,8 +337,11 @@ class TickerInfoBuilder:
         :return: Returns the total stockholder equity
         :rtype: int
         """
-        return self.get_balance_sheet().get('balanceSheetStatements', {})[0]\
-            .get('totalStockholderEquity', 0)
+        balance_sheet_statements = self.get_balance_sheet().get('balanceSheetStatements', [])
+        if not balance_sheet_statements:
+            return 0
+
+        return balance_sheet_statements[0].get('totalStockholderEquity', 0)
 
 
 class MagicFormula():
