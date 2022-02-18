@@ -252,7 +252,7 @@ class TickerInfoBuilder:
         :return: Returns the market cap
         :rtype: float
         """
-        market_cap = self.get_all_modules().get(self.symbol, {}).get('price', {}).get('marketCap', 0)
+        market_cap = self.get_all_modules().get('price', {}).get('marketCap', 0)
         return market_cap
 
     def get_total_cash(self) -> float:
