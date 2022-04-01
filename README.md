@@ -10,7 +10,7 @@ A ideia desse projeto é usar a formula do Joel Greenblat somado com algumas ide
 
 ```shell
 $ magic_formula -V
-MagicFormula v1.0.3
+MagicFormula v1.0.4
 ```
 
 ## Requerimentos
@@ -64,7 +64,7 @@ docker-compose build
 ## Instalação via pip
 Tambem pode ser instalado via pip com o seguinte comando abaixo:
 ```shell
-python3 -m pip install git+https://github.com/marinellirubens/magic_formula#egg=magic_formula==1.0.3
+python3 -m pip install git+https://github.com/marinellirubens/magic_formula#egg=magic_formula==1.0.4
 ```
 
 Ou usando o setup.py
@@ -77,7 +77,7 @@ python3 setup.py install
 Podem ser verificados os comandos de usando o argumento -h:
 ```shell
 $ magic_formula -h
-usage: magic_formula [-h] [-V] [-t THREADS] [-o OUTPUT_FOLDER] [-i INDEX [INDEX ...]] [-ll LOG_LEVEL] [-e EBIT] [-m MARKET_CAP] [-q QTY] [-d DATABASE]
+usage: magic_formula [-h] [-V] [-t THREADS] [-o OUTPUT_FOLDER] [-i INDEX [INDEX ...]] [-ll LOG_LEVEL] [-e EBIT] [-m MARKET_CAP] [-q QTY] [-d DATABASE] [-l LIST_TICKERS [LIST_TICKERS ...]]
 
 Parses command.
 
@@ -89,7 +89,11 @@ optional arguments:
   -o OUTPUT_FOLDER, --output_folder OUTPUT_FOLDER
                         Path for output folder
   -i INDEX [INDEX ...], --index INDEX [INDEX ...]
-                        Bovespa index (BRX100, IBOV, SMALL, IDIV)
+                        Bovespa indexes (BRX100, IBOV, SMALL, IDIV, MLCX, IGCT, ITAG, IBRA, IGNM, IMAT, ALL) BRX100 -
+                        Indice IBRX100 IBOV - IBOVESPA SMALL - Indice de Small Cap IDIV - Indice de Dividendos MLCX -
+                        Indice de Mid-Large Cap IGCT - Indice de Governança Corporativa ITAG - Indice de Ações com Tag
+                        Along diferenciado IBRA - Indice Brasil Amplo IGNM - Indice de Governança Corporativa - Novo
+                        Mercado IMAT - Indice de Materiais Basicos ALL - Todos os Indices anteriores
   -ll LOG_LEVEL, --log_level LOG_LEVEL
                         Log level
   -e EBIT, --ebit EBIT  Minimun ebit to be considered
@@ -98,6 +102,8 @@ optional arguments:
   -q QTY, --qty QTY     Quantity of stocks to be exported.
   -d DATABASE, --database DATABASE
                         Send information to a database[POSTGRESQL].
+  -l LIST_TICKERS [LIST_TICKERS ...], --list_tickers LIST_TICKERS [LIST_TICKERS ...]
+                        List stocks instead of using the indexes.
 ```
 
 O programa pode ser executado usando o seguinte comando
@@ -121,7 +127,7 @@ Esse comando ja esta contido nos arquivos run.sh(Linux e Macos) e run.cmd(Window
 ## Output
 Como o objetivo desse programa é listar as ações por ordem de qual esta mais barata, um excel é exportado na pasta xlsx_files com o seguinte padrão de nome:
 ```
-stocks_magic_formula_{yyyymmdd}.xlsx
+stocks_magic_formula_{yyyymmdd}_{INDEXES_NAMES}.xlsx
 ```
 Exemplo de arquivo:
 

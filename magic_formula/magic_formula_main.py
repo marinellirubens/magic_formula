@@ -8,12 +8,12 @@ import os
 import sys
 import threading
 from argparse import Namespace
+from enum import Enum
 
 import numpy as np
 import pandas
 import sqlalchemy
 from pandas import DataFrame
-from enum import Enum
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
@@ -25,13 +25,16 @@ from magic_formula.status_invest import get_ibrx_info
 from magic_formula.status_invest import get_ticker_roic_info
 
 
-__VERSION__ = '1.0.3'
+__VERSION__ = '1.0.4'
 
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
+POSSIBLE_INDEXES = ['BRX100', 'IBOV', 'SMALL', 'IDIV',
+                    'MLCX', 'IGCT', 'ITAG', 'IBRA', 'IGNM', 'IMAT']
 
 
 class DataframColums(Enum):
+    """Enum to contain the columns of the dataframe"""
     EXCEL_DF_COLUMNS = [
         'symbol',
         'roic',
@@ -83,7 +86,6 @@ class DataframColums(Enum):
     ]
 
 
-# TODO: Changes on main function to split responsabilities
 def main() -> None:
     """Main method
 
@@ -109,31 +111,70 @@ def main() -> None:
     logger = set_logger(logger, log_level=options.log_level)
     config = get_config()
 
-    if not isinstance(options.index, list):
-        options.index = [options.index, ]
-
-    possible_indexes = ['BRX100', 'IBOV', 'SMALL', 'IDIV']
-    if not all(index in possible_indexes for index in options.index):
-        logger.error(f'Option {options.index} invalid for index.')
-        sys.exit(1)
+    stock_tickers, options.index = get_tickers_list(options, logger, config)
 
     MAX_NUMBER_THREADS = options.threads
     roic_index_info = get_ticker_roic_info(
         config['STATUS_INVEST_URL'].format('"')
     )
-    stock_tickers = set()
-    for index in options.index:
-        stock_tickers.update(get_ibrx_info(config[f'{index}_URL'], logger))
 
     tickers_df = process_tickers(stock_tickers, roic_index_info, logger, options)
-    tickers_df = sort_dataframe(tickers_df, logger)
+    tickers_df = sort_dataframe(tickers_df, logger, options.roic_ignore)
 
-    export_dataframe_to_excel(tickers_df, logger, options.qty)
+    export_dataframe_to_excel(tickers_df, logger, options.qty, options.index)
     if options.database:
         if options.database not in ['POSTGRESQL']:
             logger.error(f'Option {options.database} invalid for database.')
-            exit(1)
+            sys.exit(1)
         export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
+
+
+def get_tickers_list(options: Namespace, logger: logging.Logger, config: dict) -> tuple:
+    """Get list of tickers and indexes
+
+    :param options: Arguments from command line
+    :type options: Namespace
+    :param logger: Logger
+    :type logger: logging.Logger
+    :param config: Config dict
+    :type config: dict
+    :return: Tuple with tickers and indexes
+    :rtype: tuple
+    """
+    stock_tickers = set(options.list_tickers)
+    if options.list_tickers:
+        return stock_tickers, ['LIST',]
+
+    indexes = validate_indexes(options.index, logger)
+
+    stock_tickers = set()
+    for index in indexes:
+        stock_tickers.update(get_ibrx_info(config[f'{index}_URL'], logger))
+
+    return stock_tickers, indexes
+
+
+def validate_indexes(indexes: list, logger: logging.Logger) -> None:
+    """Validate indexes
+
+    :param indexes: List of indexes
+    :type indexes: list
+    :param logger: Logger
+    :type logger: logging.Logger
+    :return: None
+    :rtype: None
+    """
+    if not isinstance(indexes, list):
+        indexes = [indexes, ]
+
+    if indexes == ['ALL', ]:
+        indexes = POSSIBLE_INDEXES
+
+    if not all(index in POSSIBLE_INDEXES for index in indexes):
+        logger.error(f'Option {indexes} invalid for index.')
+        sys.exit(1)
+
+    return indexes
 
 
 def show_version() -> None:
@@ -147,7 +188,8 @@ def show_version() -> None:
 
 def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
                               logger: logging.Logger,
-                              number_of_lines: int = None) -> None:
+                              number_of_lines: int = None,
+                              indexes: list = None) -> None:
     """Exports the ticker dataframe into an excel file
 
     :param tickers_df: Dataframe with the stocks information
@@ -158,7 +200,12 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
     :type number_of_lines: int
     :return: None
     """
-    excel_name = f'stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}.xlsx'
+    if indexes is None:
+        indexes = []
+
+    excel_name = \
+        f'stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}' + \
+            f'_{"_".join(indexes)}.xlsx'
     excel_file_name = os.path.join(XLSX_PATH, excel_name)
 
     if number_of_lines:
@@ -202,7 +249,8 @@ def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger
         logger.error(f'Error on conection with database {error}')
 
 
-def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pandas.DataFrame:
+def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger,
+                   roic_ignore: bool) -> pandas.DataFrame:
     """Sorts the dataframe and fill the fields roic_index_number, earning_yield_field,
     magic_index_field Those fields depends on the sorting to be generates
 
@@ -216,7 +264,7 @@ def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pand
     logger.info('Sorting dataframe')
     tickers_df = tickers_df.sort_values('roic', ascending=False)
 
-    tickers_df = fill_roic_index_number_field(tickers_df, logger)
+    tickers_df = fill_roic_index_number_field(tickers_df, logger, roic_ignore)
 
     tickers_df = tickers_df.sort_values('earning_yield', ascending=False)
 
@@ -229,7 +277,8 @@ def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger) -> pand
 
 
 def fill_roic_index_number_field(tickers_df: pandas.DataFrame,
-                                 logger: logging.Logger) -> pandas.DataFrame:
+                                 logger: logging.Logger, 
+                                 roic_ignore: bool) -> pandas.DataFrame:
     """Fill the field roic_index_number based on roic field
 
     :param tickers_df: Dataframe with the stocks information
@@ -240,7 +289,10 @@ def fill_roic_index_number_field(tickers_df: pandas.DataFrame,
     :rtype: pandas.DataFrame
     """
     logger.debug('Filling field roic_index_number')
+
     tickers_df['roic_index_number'] = np.arange(tickers_df['roic'].count())
+    if roic_ignore:
+        tickers_df['roic_index_number'] = [0] * tickers_df['roic'].count()
 
     return tickers_df
 

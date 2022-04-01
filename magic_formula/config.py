@@ -14,6 +14,12 @@ CONFIG = {
     "SMALL_URL": "https://statusinvest.com.br/indices/indice-small-cap",
     "IBOV_URL": "https://statusinvest.com.br/indices/ibovespa",
     "IDIV_URL": "https://statusinvest.com.br/indices/indice-dividendos",
+    "MLCX_URL": "https://statusinvest.com.br/indices/indice-midlarge-cap",
+    "IGCT_URL": "https://statusinvest.com.br/indices/indice-de-governanca-corporativa-trade",
+    "ITAG_URL": "https://statusinvest.com.br/indices/indice-de-acoes-com-tag-along-diferenciado",
+    "IBRA_URL": "https://statusinvest.com.br/indices/indice-brasil-amplo",
+    "IGNM_URL": "https://statusinvest.com.br/indices/indice-de-governanca-corporativa-–-novo-mercado",
+    "IMAT_URL": "https://statusinvest.com.br/indices/indice-de-materiais-basicos",
     "STATUS_INVEST_URL": ("https://statusinvest.com.br/category/advancedsearchresult?"
                           "search=%7B%22Sector%22%3A%22%22%2C%22SubSector%22%3A%22%22"
                           "%2C%22Segment%22%3A%22%22%2C%22my_range%22%3A%220%3B25%22%"
@@ -124,7 +130,20 @@ def get_arguments(args: list = None) -> Namespace:
     )
 
     parser.add_argument(
-        '-i', '--index', help='Bovespa index (BRX100, IBOV, SMALL, IDIV)',
+        '-i', '--index', help='''Bovespa indexes
+        (BRX100, IBOV, SMALL, IDIV, MLCX, IGCT, ITAG, IBRA, IGNM, IMAT, ALL)
+        BRX100 - Indice IBRX100
+        IBOV - IBOVESPA
+        SMALL - Indice de Small Cap
+        IDIV - Indice de Dividendos
+        MLCX - Indice de Mid-Large Cap
+        IGCT - Indice de Governança Corporativa
+        ITAG - Indice de Ações com Tag Along diferenciado
+        IBRA - Indice Brasil Amplo
+        IGNM - Indice de Governança Corporativa - Novo Mercado
+        IMAT - Indice de Materiais Basicos
+        ALL - Todos os Indices anteriores
+        ''',
         action='store', type=str, default=["BRX100"], nargs="+"
     )
 
@@ -151,6 +170,16 @@ def get_arguments(args: list = None) -> Namespace:
     parser.add_argument(
         '-d', '--database', help='Send information to a database[POSTGRESQL].', action='store',
         type=str
+    )
+
+    parser.add_argument(
+        '-l', '--list_tickers', help='List stocks instead of using the indexes.',
+        action='store', type=str, default=[], nargs="+"
+    )
+
+    parser.add_argument(
+        '-ri', '--roic_ignore', help='Option to ignore roic index and use only EY index',
+        action='store_true', default=False
     )
 
     options = parser.parse_args(args)
