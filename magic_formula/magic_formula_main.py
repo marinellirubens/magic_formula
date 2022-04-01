@@ -8,12 +8,12 @@ import os
 import sys
 import threading
 from argparse import Namespace
+from enum import Enum
 
 import numpy as np
 import pandas
 import sqlalchemy
 from pandas import DataFrame
-from enum import Enum
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
