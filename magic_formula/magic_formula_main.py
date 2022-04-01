@@ -34,6 +34,7 @@ POSSIBLE_INDEXES = ['BRX100', 'IBOV', 'SMALL', 'IDIV',
 
 
 class DataframColums(Enum):
+    """Enum to contain the columns of the dataframe"""
     EXCEL_DF_COLUMNS = [
         'symbol',
         'roic',
