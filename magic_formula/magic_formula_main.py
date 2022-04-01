@@ -86,7 +86,6 @@ class DataframColums(Enum):
     ]
 
 
-# TODO: Changes on main function to split responsabilities
 def main() -> None:
     """Main method
 
