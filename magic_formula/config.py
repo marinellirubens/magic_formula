@@ -130,7 +130,20 @@ def get_arguments(args: list = None) -> Namespace:
     )
 
     parser.add_argument(
-        '-i', '--index', help='Bovespa index (BRX100, IBOV, SMALL, IDIV)',
+        '-i', '--index', help='''Bovespa indexes
+        (BRX100, IBOV, SMALL, IDIV, MLCX, IGCT, ITAG, IBRA, IGNM, IMAT, ALL)
+        BRX100 - Indice IBRX100
+        IBOV - IBOVESPA
+        SMALL - Indice de Small Cap
+        IDIV - Indice de Dividendos
+        MLCX - Indice de Mid-Large Cap
+        IGCT - Indice de Governança Corporativa
+        ITAG - Indice de Ações com Tag Along diferenciado
+        IBRA - Indice Brasil Amplo
+        IGNM - Indice de Governança Corporativa - Novo Mercado
+        IMAT - Indice de Materiais Basicos
+        ALL - Todos os Indices anteriores
+        ''',
         action='store', type=str, default=["BRX100"], nargs="+"
     )
 
@@ -157,6 +170,16 @@ def get_arguments(args: list = None) -> Namespace:
     parser.add_argument(
         '-d', '--database', help='Send information to a database[POSTGRESQL].', action='store',
         type=str
+    )
+
+    parser.add_argument(
+        '-l', '--list_tickers', help='List stocks instead of using the indexes.',
+        action='store', type=str, default=[], nargs="+"
+    )
+
+    parser.add_argument(
+        '-ri', '--roic_ignore', help='Option to ignore roic index and use only EY index',
+        action='store_true', default=False
     )
 
     options = parser.parse_args(args)
