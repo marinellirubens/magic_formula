@@ -136,6 +136,29 @@ def main() -> None:
         export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
 
 
+def validate_indexes(indexes: list, logger: logging.Logger) -> None:
+    """Validate indexes
+
+    :param indexes: List of indexes
+    :type indexes: list
+    :param logger: Logger
+    :type logger: logging.Logger
+    :return: None
+    :rtype: None
+    """
+    if not isinstance(indexes, list):
+        indexes = [indexes, ]
+
+    if indexes == ['ALL', ]:
+        indexes = POSSIBLE_INDEXES
+
+    if not all(index in POSSIBLE_INDEXES for index in indexes):
+        logger.error(f'Option {indexes} invalid for index.')
+        sys.exit(1)
+
+    return indexes
+
+
 def show_version() -> None:
     """Prints program version
 
