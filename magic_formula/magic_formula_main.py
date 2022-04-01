@@ -29,6 +29,8 @@ __VERSION__ = '1.0.3'
 
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
+POSSIBLE_INDEXES = ['BRX100', 'IBOV', 'SMALL', 'IDIV',
+                    'MLCX', 'IGCT', 'ITAG', 'IBRA', 'IGNM', 'IMAT']
 
 
 class DataframColums(Enum):
