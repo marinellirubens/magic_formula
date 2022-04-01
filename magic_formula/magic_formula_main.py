@@ -139,6 +139,31 @@ def main() -> None:
         export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
 
 
+def get_tickers_list(options: Namespace, logger: logging.Logger, config: dict) -> tuple:
+    """Get list of tickers and indexes
+
+    :param options: Arguments from command line
+    :type options: Namespace
+    :param logger: Logger
+    :type logger: logging.Logger
+    :param config: Config dict
+    :type config: dict
+    :return: Tuple with tickers and indexes
+    :rtype: tuple
+    """
+    stock_tickers = set(options.list_tickers)
+    if options.list_tickers:
+        return stock_tickers, ['LIST',]
+
+    indexes = validate_indexes(options.index, logger)
+
+    stock_tickers = set()
+    for index in indexes:
+        stock_tickers.update(get_ibrx_info(config[f'{index}_URL'], logger))
+
+    return stock_tickers, indexes
+
+
 def validate_indexes(indexes: list, logger: logging.Logger) -> None:
     """Validate indexes
 
