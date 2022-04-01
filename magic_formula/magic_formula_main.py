@@ -135,7 +135,7 @@ def main() -> None:
     if options.database:
         if options.database not in ['POSTGRESQL']:
             logger.error(f'Option {options.database} invalid for database.')
-            exit(1)
+            sys.exit(1)
         export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
 
 
