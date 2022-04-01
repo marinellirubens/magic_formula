@@ -14,6 +14,12 @@ CONFIG = {
     "SMALL_URL": "https://statusinvest.com.br/indices/indice-small-cap",
     "IBOV_URL": "https://statusinvest.com.br/indices/ibovespa",
     "IDIV_URL": "https://statusinvest.com.br/indices/indice-dividendos",
+    "MLCX_URL": "https://statusinvest.com.br/indices/indice-midlarge-cap",
+    "IGCT_URL": "https://statusinvest.com.br/indices/indice-de-governanca-corporativa-trade",
+    "ITAG_URL": "https://statusinvest.com.br/indices/indice-de-acoes-com-tag-along-diferenciado",
+    "IBRA_URL": "https://statusinvest.com.br/indices/indice-brasil-amplo",
+    "IGNM_URL": "https://statusinvest.com.br/indices/indice-de-governanca-corporativa-–-novo-mercado",
+    "IMAT_URL": "https://statusinvest.com.br/indices/indice-de-materiais-basicos",
     "STATUS_INVEST_URL": ("https://statusinvest.com.br/category/advancedsearchresult?"
                           "search=%7B%22Sector%22%3A%22%22%2C%22SubSector%22%3A%22%22"
                           "%2C%22Segment%22%3A%22%22%2C%22my_range%22%3A%220%3B25%22%"
