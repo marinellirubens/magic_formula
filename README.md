@@ -10,7 +10,7 @@ A ideia desse projeto é usar a formula do Joel Greenblat somado com algumas ide
 
 ```shell
 $ magic_formula -V
-MagicFormula v1.0.3
+MagicFormula v1.0.4
 ```
 
 ## Requerimentos
@@ -64,7 +64,7 @@ docker-compose build
 ## Instalação via pip
 Tambem pode ser instalado via pip com o seguinte comando abaixo:
 ```shell
-python3 -m pip install git+https://github.com/marinellirubens/magic_formula#egg=magic_formula==1.0.3
+python3 -m pip install git+https://github.com/marinellirubens/magic_formula#egg=magic_formula==1.0.4
 ```
 
 Ou usando o setup.py
