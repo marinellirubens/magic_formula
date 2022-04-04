@@ -21,8 +21,8 @@ def get_ibrx_info(url: str, logger: logging.Logger) -> set:
     :rtype: set
     """
     logger.info(f'Processing url: {url}')
-
-    beatiful_soup = bs4.BeautifulSoup(requests.get(url, verify=True).content, "html.parser")
+    request_content = requests.get(url, verify=True).content
+    beatiful_soup = bs4.BeautifulSoup(request_content, "html.parser")
     tickers_ibrx100 = \
         set([x.text for x in list(beatiful_soup.find_all("span", {"class": "ticker"}))])
 
