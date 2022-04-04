@@ -124,6 +124,9 @@ class TickerInfoBuilder:
         :rtype: list
         """
         asset_profile = self.get_asset_profile()
+        if isinstance(asset_profile, str):
+            return []
+
         return asset_profile.get('industry')
 
     def get_asset_profile(self) -> dict:
@@ -154,7 +157,11 @@ class TickerInfoBuilder:
         :return: Returns the financial data
         :rtype: dict
         """
-        return self.ticker.financial_data.get(self.symbol, {})
+        financial_data = self.ticker.financial_data.get(self.symbol, {})
+        if isinstance(financial_data, str):
+            return {}
+
+        return financial_data
 
     def get_dividend_yield(self) -> float:
         """Fill dividend yield information
@@ -263,8 +270,11 @@ class TickerInfoBuilder:
         :return: Returns the total cash
         :rtype: float
         """
-        total_cash = self.ticker.financial_data.get(self.symbol, {}).get('totalCash')
-        return total_cash
+        financial_data = self.get_financial_data()
+        if isinstance(financial_data, str):
+            return 0
+
+        return financial_data.get('totalCash', 0)
 
     def get_current_price(self) -> float:
         """Fills variable current_price
@@ -274,7 +284,11 @@ class TickerInfoBuilder:
         :return: Returns the current price
         :rtype: float
         """
-        return self.ticker.financial_data.get(self.symbol, {}).get('currentPrice')
+        financial_data = self.get_financial_data()
+        if isinstance(financial_data, str):
+            return 0
+
+        return financial_data.get('currentPrice', 0)
 
     def get_total_debt(self) -> float:
         """Fills variable total_debt
