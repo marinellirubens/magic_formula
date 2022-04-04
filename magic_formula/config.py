@@ -182,5 +182,15 @@ def get_arguments(args: list = None) -> Namespace:
         action='store_true', default=False
     )
 
+    parser.add_argument(
+        '-gpl', '--graham_max_pl', help='Maximum pl for graham formula.[Default: 15]',
+        action='store', type=float, default=15
+    )
+
+    parser.add_argument(
+        '-gpvp', '--graham_max_pvp', help='Maximum pvp for graham formula.[Default: 1.5]',
+        action='store', type=float, default=1.5
+    )
+
     options = parser.parse_args(args)
     return options
