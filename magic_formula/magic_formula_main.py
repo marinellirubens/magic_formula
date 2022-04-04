@@ -41,6 +41,12 @@ class DataframColums(Enum):
         'roic',
         'current_price',
         'dividend_yield',
+        'earning_yield',
+        'graham_vi',
+        'vpa',
+        'lpa',
+        'p_L',
+        'p_VP',
         'market_cap',
         'patrimonio_liquido',
         'ebit',
@@ -54,7 +60,6 @@ class DataframColums(Enum):
         'sell_recomendation',
         'earning_yield_index',
         'magic_index',
-        'earning_yield',
         'roic_index_number',
     ]
     EXCEL_DF_COLUMNS_NAMES = [
@@ -62,6 +67,12 @@ class DataframColums(Enum):
         'roic',
         'current_price',
         'dividend_yield (%)',
+        'earning_yield',
+        'graham_vi',
+        'vpa',
+        'lpa',
+        'p_L',
+        'p_VP',
         'market_cap',
         'net_worth',
         'ebit',
@@ -75,7 +86,6 @@ class DataframColums(Enum):
         'sell_recomendation',
         'earning_yield_index',
         'magic_index',
-        'earning_yield',
         'roic_index_number',
     ]
     PROCESS_TICKERS_COLUMNS = [
@@ -83,7 +93,7 @@ class DataframColums(Enum):
         'roic', 'buy_recomendation', 'sell_recomendation', 'current_price',
         'regular_market_time', 'market_cap', 'patrimonio_liquido', 'ebit',
         'total_debt', 'total_cash', 'shares_outstanding', 'long_name',
-        'short_name', 'dividend_yield'
+        'short_name', 'dividend_yield', 'vpa', 'lpa', 'p_L', 'p_VP', 'graham_vi'
     ]
 
 
@@ -278,7 +288,7 @@ def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger,
 
 
 def fill_roic_index_number_field(tickers_df: pandas.DataFrame,
-                                 logger: logging.Logger, 
+                                 logger: logging.Logger,
                                  roic_ignore: bool) -> pandas.DataFrame:
     """Fill the field roic_index_number based on roic field
 
@@ -368,6 +378,12 @@ def process_earning_yield_calculation(
 
     roic_index_number = roic_index.get(symbol[:-3], '').get('roic_index')
     roic = roic_index.get(symbol[:-3], '').get('roic')
+    vpa = roic_index.get(symbol[:-3], '').get('vpa')
+    lpa = roic_index.get(symbol[:-3], '').get('lpa')
+    p_l = roic_index.get(symbol[:-3], '').get('p_L')
+    p_vp = roic_index.get(symbol[:-3], '').get('p_VP')
+    dividend_yield = roic_index.get(symbol[:-3], '').get('dy')
+    graham_vi = calculate_graham_vi(vpa, lpa, options.graham_max_pl, options.graham_max_pvp)
     magic_index = earning_yield + roic_index_number
 
     if earning_yield > 0:
@@ -391,7 +407,12 @@ def process_earning_yield_calculation(
             stock.ticker_info.shares_outstanding,
             stock.ticker_info.long_name,
             stock.ticker_info.short_name,
-            stock.ticker_info.dividend_yield
+            dividend_yield,
+            vpa,
+            lpa,
+            p_l,
+            p_vp,
+            graham_vi
         ]
 
     return earning_yield
