@@ -9,6 +9,7 @@ import sys
 import threading
 from argparse import Namespace
 from enum import Enum
+import math
 
 import numpy as np
 import pandas
@@ -394,6 +395,34 @@ def process_earning_yield_calculation(
         ]
 
     return earning_yield
+
+
+def calculate_graham_vi(
+    vpa: float,
+    lpa: float,
+    max_p_l: float,
+    max_p_vp: float) -> float:
+    """Calculates the Graham VI.
+
+    :param vpa: Value per share
+    :type vpa: float
+    :param lpa: Profit per share
+    :type lpa: float
+    :param max_p_l: Maximum P/L
+    :type max_p_l: float
+    :param max_p_vp: Maximum P/VP
+    :type max_p_vp: float
+    :return: Graham VI
+    :rtype: float
+    """
+    pre_vi = (max_p_l * max_p_vp) * vpa * lpa
+
+    try:
+        graham_vi = math.sqrt(pre_vi)
+    except ValueError:
+        graham_vi = 0
+
+    return round(graham_vi, 2)
 
 
 def process_tickers(stock_tickers: set, roic_index: dict,
