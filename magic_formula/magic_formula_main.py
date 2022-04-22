@@ -31,7 +31,7 @@ __VERSION__ = '1.0.4'
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 POSSIBLE_INDEXES = ['BRX100', 'IBOV', 'SMALL', 'IDIV',
-                    'MLCX', 'IGCT', 'ITAG', 'IBRA', 'IGNM', 'IMAT']
+                    'MLCX', 'IGCT', 'ITAG', 'IBRA', 'IGNM', 'IMAT', 'ALL']
 
 
 class DataframColums(Enum):
@@ -122,12 +122,13 @@ def main() -> None:
     logger = set_logger(logger, log_level=options.log_level)
     config = get_config()
 
-    stock_tickers, options.index = get_tickers_list(options, logger, config)
-
-    MAX_NUMBER_THREADS = options.threads
     roic_index_info = get_ticker_roic_info(
         config['STATUS_INVEST_URL'].format('"')
     )
+
+    stock_tickers, options.index = get_tickers_list(options, logger, config, roic_index_info)
+
+    MAX_NUMBER_THREADS = options.threads
 
     tickers_df = process_tickers(stock_tickers, roic_index_info, logger, options)
     tickers_df = sort_dataframe(tickers_df, logger, options.roic_ignore)
@@ -140,7 +141,7 @@ def main() -> None:
         export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
 
 
-def get_tickers_list(options: Namespace, logger: logging.Logger, config: dict) -> tuple:
+def get_tickers_list(options: Namespace, logger: logging.Logger, config: dict, roic_index_info: dict) -> tuple:
     """Get list of tickers and indexes
 
     :param options: Arguments from command line
@@ -159,6 +160,10 @@ def get_tickers_list(options: Namespace, logger: logging.Logger, config: dict) -
     indexes = validate_indexes(options.index, logger)
 
     stock_tickers = set()
+    if indexes == ['ALL']:
+        stock_tickers.update(roic_index_info.keys())
+        return stock_tickers, indexes
+
     for index in indexes:
         stock_tickers.update(get_ibrx_info(config[f'{index}_URL'], logger))
 
@@ -178,8 +183,8 @@ def validate_indexes(indexes: list, logger: logging.Logger) -> None:
     if not isinstance(indexes, list):
         indexes = [indexes, ]
 
-    if indexes == ['ALL', ]:
-        indexes = POSSIBLE_INDEXES
+    if 'ALL' in indexes:
+        indexes = ['ALL', ]
 
     if not all(index in POSSIBLE_INDEXES for index in indexes):
         logger.error(f'Option {indexes} invalid for index.')
@@ -365,6 +370,7 @@ def process_earning_yield_calculation(
     :return: Earning yeld of the current stock
     :rtype: float
     """
+    logger.info(f"Processing ticker - {symbol}")
     stock: MagicFormula = MagicFormula(symbol, logger, ebit_min=options.ebit,
                                        market_cap_min=options.market_cap)
     if stock.get_ticker_info() is None:

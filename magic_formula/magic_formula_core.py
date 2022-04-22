@@ -171,8 +171,12 @@ class TickerInfoBuilder:
         :return: Returns the dividend yield
         :rtype: float
         """
-        return round(self.ticker.summary_detail.get(self.symbol, {}).get('dividendYield', 0)
-                     * 100, 2)
+        summary_detail = self.get_summary_detail()
+        dividend_yield = summary_detail.get('dividendYield')
+        if not isinstance(dividend_yield, float):
+            dividend_yield = 0.0
+
+        return round(dividend_yield * 100, 2)
 
     def get_key_statistics(self) -> dict:
         """Fill key statistics variable
@@ -203,7 +207,13 @@ class TickerInfoBuilder:
         :return: Returns the summary detail
         :rtype: dict
         """
-        return self.ticker.summary_detail.get(self.symbol)
+        if isinstance(self.ticker.summary_detail, str):
+            return {}
+
+        if isinstance(self.ticker.summary_detail.get(self.symbol, {}), str):
+            return {}
+
+        return self.ticker.summary_detail.get(self.symbol, {})
 
     def get_recomendation_trend(self) -> RecomenationTrend:
         """Returns a RecomenationTrend with the information of the number of
@@ -475,8 +485,16 @@ class MagicFormula():
         :return: Total enterpris value
         :rtype: float
         """
-        self.tev = self.ticker_info.total_stockholder_equity + self.ticker_info.total_debt
+        self.tev = self.ticker_info.market_cap + self.calculate_liquid_debt()
         return self.tev
+
+    def calculate_liquid_debt(self) -> float:
+        """Calcullates the current liquid debt and returns it
+
+        :return: Liquid debt
+        :rtype: float
+        """
+        return max(self.ticker_info.total_debt - self.ticker_info.total_cash, 0)
 
     def calculate_earning_yield(self) -> float:
         """Calculates the current earning yield of the company
