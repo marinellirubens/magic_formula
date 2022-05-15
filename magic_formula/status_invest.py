@@ -21,8 +21,8 @@ def get_ibrx_info(url: str, logger: logging.Logger) -> set:
     :rtype: set
     """
     logger.info(f'Processing url: {url}')
-
-    beatiful_soup = bs4.BeautifulSoup(requests.get(url, verify=True).content, "html.parser")
+    request_content = requests.get(url, verify=True).content
+    beatiful_soup = bs4.BeautifulSoup(request_content, "html.parser")
     tickers_ibrx100 = \
         set([x.text for x in list(beatiful_soup.find_all("span", {"class": "ticker"}))])
 
@@ -47,7 +47,7 @@ def get_ticker_roic_info(url: str) -> dict:
     roic_info_df['roic'] = roic_info_df['roic'].replace(np.NaN, 0)
     roic_info_df['roic_index'] = [x for x, y in enumerate(roic_info_df['roic'].iteritems())]
 
-    roic_info_df = roic_info_df[['ticker', 'roic_index', 'roic']]
+    roic_info_df = roic_info_df[['ticker', 'roic_index', 'roic', 'vpa', 'lpa', 'p_L', 'p_VP', 'dy']]
     roic_info_df.set_index(['ticker'], inplace=True)
 
     return roic_info_df.to_dict('index')

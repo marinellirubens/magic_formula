@@ -9,6 +9,7 @@ import sys
 import threading
 from argparse import Namespace
 from enum import Enum
+import math
 
 import numpy as np
 import pandas
@@ -30,7 +31,7 @@ __VERSION__ = '1.0.4'
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 POSSIBLE_INDEXES = ['BRX100', 'IBOV', 'SMALL', 'IDIV',
-                    'MLCX', 'IGCT', 'ITAG', 'IBRA', 'IGNM', 'IMAT']
+                    'MLCX', 'IGCT', 'ITAG', 'IBRA', 'IGNM', 'IMAT', 'ALL']
 
 
 class DataframColums(Enum):
@@ -40,6 +41,13 @@ class DataframColums(Enum):
         'roic',
         'current_price',
         'dividend_yield',
+        'earning_yield',
+        'graham_vi',
+        'graham_upside',
+        'vpa',
+        'lpa',
+        'p_L',
+        'p_VP',
         'market_cap',
         'patrimonio_liquido',
         'ebit',
@@ -47,13 +55,12 @@ class DataframColums(Enum):
         'total_cash',
         'shares_outstanding',
         'long_name',
-        'short_name',
+        'industry',
         'regular_market_time',
         'buy_recomendation',
         'sell_recomendation',
         'earning_yield_index',
         'magic_index',
-        'earning_yield',
         'roic_index_number',
     ]
     EXCEL_DF_COLUMNS_NAMES = [
@@ -61,6 +68,13 @@ class DataframColums(Enum):
         'roic',
         'current_price',
         'dividend_yield (%)',
+        'earning_yield',
+        'graham_vi',
+        'graham_upside',
+        'vpa',
+        'lpa',
+        'p_L',
+        'p_VP',
         'market_cap',
         'net_worth',
         'ebit',
@@ -68,13 +82,12 @@ class DataframColums(Enum):
         'total_cash',
         'shares_outstanding',
         'long_name',
-        'short_name',
+        'industry',
         'regular_market_time',
         'buy_recomendation',
         'sell_recomendation',
         'earning_yield_index',
         'magic_index',
-        'earning_yield',
         'roic_index_number',
     ]
     PROCESS_TICKERS_COLUMNS = [
@@ -82,7 +95,7 @@ class DataframColums(Enum):
         'roic', 'buy_recomendation', 'sell_recomendation', 'current_price',
         'regular_market_time', 'market_cap', 'patrimonio_liquido', 'ebit',
         'total_debt', 'total_cash', 'shares_outstanding', 'long_name',
-        'short_name', 'dividend_yield'
+        'industry', 'dividend_yield', 'vpa', 'lpa', 'p_L', 'p_VP', 'graham_vi', 'graham_upside'
     ]
 
 
@@ -111,12 +124,13 @@ def main() -> None:
     logger = set_logger(logger, log_level=options.log_level)
     config = get_config()
 
-    stock_tickers, options.index = get_tickers_list(options, logger, config)
-
-    MAX_NUMBER_THREADS = options.threads
     roic_index_info = get_ticker_roic_info(
         config['STATUS_INVEST_URL'].format('"')
     )
+
+    stock_tickers, options.index = get_tickers_list(options, logger, config, roic_index_info)
+
+    MAX_NUMBER_THREADS = options.threads
 
     tickers_df = process_tickers(stock_tickers, roic_index_info, logger, options)
     tickers_df = sort_dataframe(tickers_df, logger, options.roic_ignore)
@@ -129,7 +143,8 @@ def main() -> None:
         export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
 
 
-def get_tickers_list(options: Namespace, logger: logging.Logger, config: dict) -> tuple:
+def get_tickers_list(options: Namespace, logger: logging.Logger,
+                     config: dict, roic_index_info: dict) -> tuple:
     """Get list of tickers and indexes
 
     :param options: Arguments from command line
@@ -148,6 +163,10 @@ def get_tickers_list(options: Namespace, logger: logging.Logger, config: dict) -
     indexes = validate_indexes(options.index, logger)
 
     stock_tickers = set()
+    if indexes == ['ALL']:
+        stock_tickers.update(roic_index_info.keys())
+        return stock_tickers, indexes
+
     for index in indexes:
         stock_tickers.update(get_ibrx_info(config[f'{index}_URL'], logger))
 
@@ -167,8 +186,8 @@ def validate_indexes(indexes: list, logger: logging.Logger) -> None:
     if not isinstance(indexes, list):
         indexes = [indexes, ]
 
-    if indexes == ['ALL', ]:
-        indexes = POSSIBLE_INDEXES
+    if 'ALL' in indexes:
+        indexes = ['ALL', ]
 
     if not all(index in POSSIBLE_INDEXES for index in indexes):
         logger.error(f'Option {indexes} invalid for index.')
@@ -277,7 +296,7 @@ def sort_dataframe(tickers_df: pandas.DataFrame, logger: logging.Logger,
 
 
 def fill_roic_index_number_field(tickers_df: pandas.DataFrame,
-                                 logger: logging.Logger, 
+                                 logger: logging.Logger,
                                  roic_ignore: bool) -> pandas.DataFrame:
     """Fill the field roic_index_number based on roic field
 
@@ -354,6 +373,7 @@ def process_earning_yield_calculation(
     :return: Earning yeld of the current stock
     :rtype: float
     """
+    logger.info(f"Processing ticker - {symbol}")
     stock: MagicFormula = MagicFormula(symbol, logger, ebit_min=options.ebit,
                                        market_cap_min=options.market_cap)
     if stock.get_ticker_info() is None:
@@ -367,6 +387,13 @@ def process_earning_yield_calculation(
 
     roic_index_number = roic_index.get(symbol[:-3], '').get('roic_index')
     roic = roic_index.get(symbol[:-3], '').get('roic')
+    vpa = roic_index.get(symbol[:-3], '').get('vpa')
+    lpa = roic_index.get(symbol[:-3], '').get('lpa')
+    p_l = roic_index.get(symbol[:-3], '').get('p_L')
+    p_vp = roic_index.get(symbol[:-3], '').get('p_VP')
+    dividend_yield = roic_index.get(symbol[:-3], '').get('dy')
+    graham_vi = calculate_graham_vi(vpa, lpa, options.graham_max_pl, options.graham_max_pvp)
+    graham_upside = calculate_graham_upside(stock.ticker_info.current_price, graham_vi)
     magic_index = earning_yield + roic_index_number
 
     if earning_yield > 0:
@@ -389,11 +416,68 @@ def process_earning_yield_calculation(
             stock.ticker_info.total_cash,
             stock.ticker_info.shares_outstanding,
             stock.ticker_info.long_name,
-            stock.ticker_info.short_name,
-            stock.ticker_info.dividend_yield
+            stock.ticker_info.industry,
+            dividend_yield,
+            vpa,
+            lpa,
+            p_l,
+            p_vp,
+            graham_vi,
+            graham_upside
         ]
 
     return earning_yield
+
+
+def calculate_graham_vi(
+    vpa: float,
+    lpa: float,
+    max_p_l: float,
+    max_p_vp: float) -> float:
+    """Calculates the Graham VI.
+
+    :param vpa: Value per share
+    :type vpa: float
+    :param lpa: Profit per share
+    :type lpa: float
+    :param max_p_l: Maximum P/L
+    :type max_p_l: float
+    :param max_p_vp: Maximum P/VP
+    :type max_p_vp: float
+    :return: Graham VI
+    :rtype: float
+    """
+    if vpa <= 0 or lpa <= 0:
+        return 0
+
+    pre_vi = (max_p_l * max_p_vp) * vpa * lpa
+
+    try:
+        graham_vi = math.sqrt(pre_vi)
+    except ValueError:
+        graham_vi = 0
+
+    return round(graham_vi, 2)
+
+
+def calculate_graham_upside(
+    current_price: float,
+    graham_vi: float) -> float:
+    """Calculates the Graham upside based on the calculated VI
+
+    :param current_price: Current price of the stock
+    :type current_price: float
+    :param graham_vi: Graham VI
+    :type graham_vi: float
+    :return: Graham upside
+    :rtype: float
+    """
+    if current_price <= 0 or graham_vi <= 0:
+        return 0
+
+    pre_vi = (graham_vi - current_price) / current_price
+
+    return round(pre_vi, 2)
 
 
 def process_tickers(stock_tickers: set, roic_index: dict,
