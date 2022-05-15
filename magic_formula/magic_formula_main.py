@@ -43,6 +43,7 @@ class DataframColums(Enum):
         'dividend_yield',
         'earning_yield',
         'graham_vi',
+        'graham_upside',
         'vpa',
         'lpa',
         'p_L',
@@ -54,7 +55,7 @@ class DataframColums(Enum):
         'total_cash',
         'shares_outstanding',
         'long_name',
-        'short_name',
+        'industry',
         'regular_market_time',
         'buy_recomendation',
         'sell_recomendation',
@@ -69,6 +70,7 @@ class DataframColums(Enum):
         'dividend_yield (%)',
         'earning_yield',
         'graham_vi',
+        'graham_upside',
         'vpa',
         'lpa',
         'p_L',
@@ -80,7 +82,7 @@ class DataframColums(Enum):
         'total_cash',
         'shares_outstanding',
         'long_name',
-        'short_name',
+        'industry',
         'regular_market_time',
         'buy_recomendation',
         'sell_recomendation',
@@ -93,7 +95,7 @@ class DataframColums(Enum):
         'roic', 'buy_recomendation', 'sell_recomendation', 'current_price',
         'regular_market_time', 'market_cap', 'patrimonio_liquido', 'ebit',
         'total_debt', 'total_cash', 'shares_outstanding', 'long_name',
-        'short_name', 'dividend_yield', 'vpa', 'lpa', 'p_L', 'p_VP', 'graham_vi'
+        'industry', 'dividend_yield', 'vpa', 'lpa', 'p_L', 'p_VP', 'graham_vi', 'graham_upside'
     ]
 
 
@@ -141,7 +143,8 @@ def main() -> None:
         export_dataframe_to_sql(tickers_df, logger, config["POSTGRESQL_STRING"], options.qty)
 
 
-def get_tickers_list(options: Namespace, logger: logging.Logger, config: dict, roic_index_info: dict) -> tuple:
+def get_tickers_list(options: Namespace, logger: logging.Logger,
+                     config: dict, roic_index_info: dict) -> tuple:
     """Get list of tickers and indexes
 
     :param options: Arguments from command line
@@ -390,6 +393,7 @@ def process_earning_yield_calculation(
     p_vp = roic_index.get(symbol[:-3], '').get('p_VP')
     dividend_yield = roic_index.get(symbol[:-3], '').get('dy')
     graham_vi = calculate_graham_vi(vpa, lpa, options.graham_max_pl, options.graham_max_pvp)
+    graham_upside = calculate_graham_upside(stock.ticker_info.current_price, graham_vi)
     magic_index = earning_yield + roic_index_number
 
     if earning_yield > 0:
@@ -412,13 +416,14 @@ def process_earning_yield_calculation(
             stock.ticker_info.total_cash,
             stock.ticker_info.shares_outstanding,
             stock.ticker_info.long_name,
-            stock.ticker_info.short_name,
+            stock.ticker_info.industry,
             dividend_yield,
             vpa,
             lpa,
             p_l,
             p_vp,
-            graham_vi
+            graham_vi,
+            graham_upside
         ]
 
     return earning_yield
@@ -442,6 +447,9 @@ def calculate_graham_vi(
     :return: Graham VI
     :rtype: float
     """
+    if vpa <= 0 or lpa <= 0:
+        return 0
+
     pre_vi = (max_p_l * max_p_vp) * vpa * lpa
 
     try:
@@ -450,6 +458,26 @@ def calculate_graham_vi(
         graham_vi = 0
 
     return round(graham_vi, 2)
+
+
+def calculate_graham_upside(
+    current_price: float,
+    graham_vi: float) -> float:
+    """Calculates the Graham upside based on the calculated VI
+
+    :param current_price: Current price of the stock
+    :type current_price: float
+    :param graham_vi: Graham VI
+    :type graham_vi: float
+    :return: Graham upside
+    :rtype: float
+    """
+    if current_price <= 0 or graham_vi <= 0:
+        return 0
+
+    pre_vi = (graham_vi - current_price) / current_price
+
+    return round(pre_vi, 2)
 
 
 def process_tickers(stock_tickers: set, roic_index: dict,
