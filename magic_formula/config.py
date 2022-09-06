@@ -77,13 +77,13 @@ def get_config(config_file: str = None) -> dict:
     return config
 
 
-def set_logger(logger: logging.Logger = logging.Logger(__name__), log_file_name: str = 'stocks.log',
+def set_logger(logger: logging.Logger = logging.Logger(__name__), log_file_name: str = 'logs/stocks.log',
                log_level: str = 'DEBUG') -> logging.Logger:
     """Sets the logger configuration
 
     :param logger: Logger variable
     :type logger: logging.Logger
-    :param log_file_name: name of the log file, defaults to 'stocks.log'
+    :param log_file_name: name of the log file, defaults to 'logs/stocks.log'
     :type log_file_name: str, optional
     :return: logger object
     :rtype: logging.Logger
