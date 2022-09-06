@@ -30,8 +30,8 @@ __VERSION__ = '1.0.4'
 
 MAX_NUMBER_THREADS = 10
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
-POSSIBLE_INDEXES = ['BRX100', 'IBOV', 'SMALL', 'IDIV',
-                    'MLCX', 'IGCT', 'ITAG', 'IBRA', 'IGNM', 'IMAT', 'ALL']
+POSSIBLE_INDEXES = {'BRX100', 'IBOV', 'SMALL', 'IDIV',
+                    'MLCX', 'IGCT', 'ITAG', 'IBRA', 'IGNM', 'IMAT', 'ALL', }
 
 
 class DataframColums(Enum):
@@ -158,7 +158,7 @@ def get_tickers_list(options: Namespace, logger: logging.Logger,
     """
     stock_tickers = set(options.list_tickers)
     if options.list_tickers:
-        return stock_tickers, ['LIST',]
+        return stock_tickers, ['LIST', ]
 
     indexes = validate_indexes(options.index, logger)
 
@@ -224,7 +224,7 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
 
     excel_name = \
         f'stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}' + \
-            f'_{"_".join(indexes)}.xlsx'
+        f'_{"_".join(indexes)}.xlsx'
     excel_file_name = os.path.join(XLSX_PATH, excel_name)
 
     if number_of_lines:
@@ -353,11 +353,11 @@ def fill_magic_index_field(tickers_df: pandas.DataFrame,
 
 
 def process_earning_yield_calculation(
-        symbol: str, data_frame: DataFrame,
-        index: int, roic_index: dict,
-        logger: logging.Logger,
-        options: Namespace
-    ) -> float:
+            symbol: str, data_frame: DataFrame,
+            index: int, roic_index: dict,
+            logger: logging.Logger,
+            options: Namespace
+        ) -> float:
     """Returns stock earning yield.
 
     :param symbol: Ticker symbol
@@ -430,10 +430,10 @@ def process_earning_yield_calculation(
 
 
 def calculate_graham_vi(
-    vpa: float,
-    lpa: float,
-    max_p_l: float,
-    max_p_vp: float) -> float:
+        vpa: float,
+        lpa: float,
+        max_p_l: float,
+        max_p_vp: float) -> float:
     """Calculates the Graham VI.
 
     :param vpa: Value per share
@@ -461,8 +461,8 @@ def calculate_graham_vi(
 
 
 def calculate_graham_upside(
-    current_price: float,
-    graham_vi: float) -> float:
+        current_price: float,
+        graham_vi: float) -> float:
     """Calculates the Graham upside based on the calculated VI
 
     :param current_price: Current price of the stock
