@@ -6,7 +6,8 @@ import logging
 import logging.handlers
 import os
 import sys
-import threading
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import as_completed
 from argparse import Namespace
 from enum import Enum
 import math
@@ -28,7 +29,7 @@ from magic_formula.status_invest import get_ticker_roic_info
 
 __VERSION__ = '1.0.4'
 
-MAX_NUMBER_THREADS = 10
+MAX_NUMBER_THREADS = 15
 XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
 POSSIBLE_INDEXES = ['BRX100', 'IBOV', 'SMALL', 'IDIV',
                     'MLCX', 'IGCT', 'ITAG', 'IBRA', 'IGNM', 'IMAT', 'ALL']
@@ -352,12 +353,7 @@ def fill_magic_index_field(tickers_df: pandas.DataFrame,
     return tickers_df
 
 
-def process_earning_yield_calculation(
-        symbol: str, data_frame: DataFrame,
-        index: int, roic_index: dict,
-        logger: logging.Logger,
-        options: Namespace
-    ) -> float:
+def process_earning_yield_calculation(args) -> float:
     """Returns stock earning yield.
 
     :param symbol: Ticker symbol
@@ -373,6 +369,13 @@ def process_earning_yield_calculation(
     :return: Earning yeld of the current stock
     :rtype: float
     """
+    symbol: str = args[0]
+    data_frame: DataFrame = args[1]
+    index: int = args[2]
+    roic_index: dict = args[3]
+    logger: logging.Logger = args[4]
+    options: Namespace = args[5]
+
     logger.info(f"Processing ticker - {symbol}")
     stock: MagicFormula = MagicFormula(symbol, logger, ebit_min=options.ebit,
                                        market_cap_min=options.market_cap)
@@ -426,14 +429,14 @@ def process_earning_yield_calculation(
             graham_upside
         ]
 
-    return earning_yield
+    # return earning_yield
 
 
 def calculate_graham_vi(
-    vpa: float,
-    lpa: float,
-    max_p_l: float,
-    max_p_vp: float) -> float:
+        vpa: float,
+        lpa: float,
+        max_p_l: float,
+        max_p_vp: float) -> float:
     """Calculates the Graham VI.
 
     :param vpa: Value per share
@@ -461,8 +464,8 @@ def calculate_graham_vi(
 
 
 def calculate_graham_upside(
-    current_price: float,
-    graham_vi: float) -> float:
+        current_price: float,
+        graham_vi: float) -> float:
     """Calculates the Graham upside based on the calculated VI
 
     :param current_price: Current price of the stock
@@ -497,28 +500,17 @@ def process_tickers(stock_tickers: set, roic_index: dict,
         columns=DataframColums.PROCESS_TICKERS_COLUMNS.value
     )
 
-    threads = []
     logger.info('Processing tickers')
-    for index, ticker in enumerate(stock_tickers):
-        if len(threads) == MAX_NUMBER_THREADS:
-            for thread in threads:
-                thread.join()
-            threads = []
 
-        thread = threading.Thread(
-            target=process_earning_yield_calculation,
-            args=(ticker + '.SA', data_frame, index, roic_index, logger, options, )
+    with ThreadPoolExecutor(max_workers=MAX_NUMBER_THREADS) as executor:
+        results = executor.map(
+            process_earning_yield_calculation,
+            [(ticker + '.SA', data_frame, index, roic_index, logger, options)
+             for index, ticker in enumerate(stock_tickers)]
         )
-        logger.debug(f'Processing ticker: {ticker} on thread {thread}')
 
-        thread.daemon = False
-        thread.start()
-        threads.append(thread)
-
-    if threads:
-        for thread in threads:
-            thread.join()
-        threads = []
+        for result in results:
+            _ = result
 
     return data_frame
 

@@ -121,7 +121,7 @@ def get_arguments(args: list = None) -> Namespace:
 
     parser.add_argument(
         '-t', '--threads', help='Max Number of threads',
-        action='store', type=int, default=10
+        action='store', type=int, default=150
     )
 
     parser.add_argument(
@@ -164,7 +164,7 @@ def get_arguments(args: list = None) -> Namespace:
 
     parser.add_argument(
         '-q', '--qty', help='Quantity of stocks to be exported.', action='store',
-        type=int, default=15
+        type=int, default=150
     )
 
     parser.add_argument(
