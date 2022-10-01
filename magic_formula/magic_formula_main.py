@@ -22,7 +22,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 from magic_formula.config import get_config
 from magic_formula.config import get_arguments
 from magic_formula.config import set_logger
-from magic_formula.magic_formula_core import MagicFormula
+from magic_formula.core import MagicFormula
 from magic_formula.status_invest import get_ibrx_info
 from magic_formula.status_invest import get_ticker_roic_info
 

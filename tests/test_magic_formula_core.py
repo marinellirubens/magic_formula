@@ -12,7 +12,7 @@ sys.path.append(
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../tests')))
 
-from magic_formula import magic_formula_core
+from magic_formula import core
 
 
 class TestMagicFormula(unittest.TestCase):
@@ -20,26 +20,26 @@ class TestMagicFormula(unittest.TestCase):
     @mock.patch('logging.Logger')
     def setUp(self, logger): # pylint: disable=arguments-differ
         self.logger = logger
-        self.wege = magic_formula_core.MagicFormula('WEGE3.SA', logger)
+        self.wege = core.MagicFormula('WEGE3.SA', logger)
         self.wege.get_ticker_info()
 
     def test_magic_formula_instance(self):
         """Test if MagicFormula instance is created"""
-        self.assertIsInstance(self.wege, magic_formula_core.MagicFormula)
+        self.assertIsInstance(self.wege, core.MagicFormula)
         self.assertEqual(self.wege.symbol, 'WEGE3.SA')
         self.assertIsNotNone(self.wege.ticker_info)
 
     def test_validate_ticker_info(self):
         """Test if ticker_info is valid"""
         self.assertIsNotNone(self.wege.ticker_info)
-        self.assertIsInstance(self.wege.ticker_info, magic_formula_core.TickerInfo)
+        self.assertIsInstance(self.wege.ticker_info, core.TickerInfo)
 
     def test_valid_recomendation_trend_error(self):
         """Test if recomendation_trend is valid"""
         self.assertIsNotNone(self.wege.ticker_info.recommendation_trend)
         self.assertIsInstance(
             self.wege.ticker_info.recommendation_trend,
-            magic_formula_core.RecomenationTrend)
+            core.RecomenationTrend)
         self.assertIsInstance(self.wege.ticker_info.recommendation_trend.buy_counter, int)
         self.assertIsInstance(self.wege.ticker_info.recommendation_trend.sell_counter, int)
 
@@ -155,9 +155,9 @@ class TestRecomenationTrend(unittest.TestCase):
     """Tests the dataclass RecomenationTrend"""
     def test_recomendation_trend_creation(self):
         """Tests the dataclass RecomenationTrend instance"""
-        rec_trend = magic_formula_core.RecomenationTrend(1, 2)
+        rec_trend = core.RecomenationTrend(1, 2)
 
-        self.assertIsInstance(rec_trend, magic_formula_core.RecomenationTrend)
+        self.assertIsInstance(rec_trend, core.RecomenationTrend)
         self.assertIsInstance(rec_trend.buy_counter, int)
         self.assertIsInstance(rec_trend.sell_counter, int)
 
@@ -166,11 +166,11 @@ class TestTickerInfoBuilder(unittest.TestCase):
     """Class to build the TickerInfo object"""
     @mock.patch('yahooquery.Ticker')
     @mock.patch('logging.Logger')
-    def setUp(self, logger, ticker): # pylint: disable=arguments-differ
+    def setUp(self, logger, ticker):  # pylint: disable=arguments-differ
         self.symbol = 'WEGE3.SA'
         self.logger = logger
         self.ticker = self.get_ticker_pickles(ticker)
-        self.builder = magic_formula_core.TickerInfoBuilder(self.ticker, self.symbol)
+        self.builder = core.TickerInfoBuilder(self.ticker, self.symbol)
 
     def get_ticker_pickles(self, ticker):
         """Get pickled ticker"""
@@ -264,16 +264,16 @@ class TestTickerInfoBuilder(unittest.TestCase):
         
         with mock.patch('pandas.DataFrame.sum') as dataframe:
             dataframe.return_value = (0, 0, 0, 3)
-            rec_trend = magic_formula_core.RecomenationTrend(0, 3)
+            rec_trend = core.RecomenationTrend(0, 3)
             return_ = self.builder.get_recomendation_trend()
-            assert isinstance(return_, magic_formula_core.RecomenationTrend)
+            assert isinstance(return_, core.RecomenationTrend)
             assert rec_trend == return_
             
             dataframe.side_effect = ValueError('test')
             
             with self.assertRaises(ValueError):
                 return_ = self.builder.get_recomendation_trend()
-                assert magic_formula_core.RecomenationTrend(0, 3) == return_
+                assert core.RecomenationTrend(0, 3) == return_
             
 
     def test_get_ebit(self) -> None:
