@@ -18,7 +18,8 @@ CONFIG = {
     "IGCT_URL": "https://statusinvest.com.br/indices/indice-de-governanca-corporativa-trade",
     "ITAG_URL": "https://statusinvest.com.br/indices/indice-de-acoes-com-tag-along-diferenciado",
     "IBRA_URL": "https://statusinvest.com.br/indices/indice-brasil-amplo",
-    "IGNM_URL": "https://statusinvest.com.br/indices/indice-de-governanca-corporativa-–-novo-mercado",
+    "IGNM_URL":
+        "https://statusinvest.com.br/indices/indice-de-governanca-corporativa-–-novo-mercado",
     "IMAT_URL": "https://statusinvest.com.br/indices/indice-de-materiais-basicos",
     "STATUS_INVEST_URL": ("https://statusinvest.com.br/category/advancedsearchresult?"
                           "search=%7B%22Sector%22%3A%22%22%2C%22SubSector%22%3A%22%22"

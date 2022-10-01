@@ -113,7 +113,7 @@ def main() -> None:
 
     if options.output_folder:
         if not os.path.exists(options.output_folder):
-            raise Exception('Folder informed must exist already, ' + \
+            raise Exception('Folder informed must exist already, '
                             f'folder {options.output_folder} does not exists.')
 
         XLSX_PATH = options.output_folder
@@ -159,7 +159,7 @@ def get_tickers_list(options: Namespace, logger: logging.Logger,
     """
     stock_tickers = set(options.list_tickers)
     if options.list_tickers:
-        return stock_tickers, ['LIST',]
+        return stock_tickers, ['LIST', ]
 
     indexes = validate_indexes(options.index, logger)
 
@@ -225,7 +225,7 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
 
     excel_name = \
         f'stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}' + \
-            f'_{"_".join(indexes)}.xlsx'
+        f'_{"_".join(indexes)}.xlsx'
     excel_file_name = os.path.join(XLSX_PATH, excel_name)
 
     if number_of_lines:
