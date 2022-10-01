@@ -105,6 +105,8 @@ def main() -> None:
 
     :return: None
     """
+    # TODO: include json exports
+    # TODO: include the possibility of inform tickets and indexes on a file
     global MAX_NUMBER_THREADS
     global XLSX_PATH
     options = get_arguments()
