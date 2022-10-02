@@ -42,7 +42,7 @@ class TickerInfo:
 class TickerInfoBuilder:
     """Class to build the TickerInfo object"""
     def __init__(self, ticker: yahooquery.Ticker, symbol: str) -> None:
-        self.ticker= ticker
+        self.ticker = ticker
         self.symbol = symbol
 
     def build(self) -> TickerInfo:
@@ -403,6 +403,7 @@ class MagicFormula():
             return None
 
         if not self.valid_information_dict():
+            self.logger.debug(f"{self.symbol}: information not valid")
             return None
 
         self.logger.debug(self.symbol)
@@ -416,15 +417,19 @@ class MagicFormula():
         :rtype: bool
         """
         if not self.valid_information_dict():
+            self.logger.debug(f"{self.symbol}: information not valid dictionary")
             return False
 
         if not self.valid_industry():
+            self.logger.debug(f"{self.symbol}: not a valid industry")
             return False
 
         if not self.valid_ebit():
+            self.logger.debug(f"{self.symbol}: invalid ebit")
             return False
 
         if not self.valid_ticker_info():
+            self.logger.debug(f"{self.symbol}: invalid ticker info")
             return False
 
         return True
