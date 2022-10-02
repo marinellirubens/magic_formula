@@ -77,11 +77,12 @@ python3 setup.py install
 Podem ser verificados os comandos de usando o argumento -h:
 ```shell
 $ magic_formula -h
-usage: magic_formula [-h] [-V] [-t THREADS] [-o OUTPUT_FOLDER] [-i INDEX [INDEX ...]] [-ll LOG_LEVEL] [-e EBIT] [-m MARKET_CAP] [-q QTY] [-d DATABASE] [-l LIST_TICKERS [LIST_TICKERS ...]]
+usage: magic_formula_main.py [-h] [-V] [-t THREADS] [-o OUTPUT_FOLDER] [-i INDEX [INDEX ...]] [-ll LOG_LEVEL] [-e EBIT] [-m MARKET_CAP] [-q QTY] [-d DATABASE] [-f FORMAT]
+                             [-l LIST_TICKERS [LIST_TICKERS ...]] [-lf LIST_TICKERS_FILE] [-ri] [-gpl GRAHAM_MAX_PL] [-gpvp GRAHAM_MAX_PVP]
 
 Parses command.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -V, --version         Show program version
   -t THREADS, --threads THREADS
@@ -89,11 +90,9 @@ optional arguments:
   -o OUTPUT_FOLDER, --output_folder OUTPUT_FOLDER
                         Path for output folder
   -i INDEX [INDEX ...], --index INDEX [INDEX ...]
-                        Bovespa indexes (BRX100, IBOV, SMALL, IDIV, MLCX, IGCT, ITAG, IBRA, IGNM, IMAT, ALL) BRX100 -
-                        Indice IBRX100 IBOV - IBOVESPA SMALL - Indice de Small Cap IDIV - Indice de Dividendos MLCX -
-                        Indice de Mid-Large Cap IGCT - Indice de Governança Corporativa ITAG - Indice de Ações com Tag
-                        Along diferenciado IBRA - Indice Brasil Amplo IGNM - Indice de Governança Corporativa - Novo
-                        Mercado IMAT - Indice de Materiais Basicos ALL - Todos os Indices anteriores
+                        Bovespa indexes (BRX100, IBOV, SMALL, IDIV, MLCX, IGCT, ITAG, IBRA, IGNM, IMAT, ALL) BRX100 - Indice IBRX100 IBOV - IBOVESPA SMALL - Indice de Small Cap IDIV - Indice de Dividendos    
+                        MLCX - Indice de Mid-Large Cap IGCT - Indice de Governança Corporativa ITAG - Indice de Ações com Tag Along diferenciado IBRA - Indice Brasil Amplo IGNM - Indice de Governança
+                        Corporativa - Novo Mercado IMAT - Indice de Materiais Basicos ALL - Todos os Indices anteriores
   -ll LOG_LEVEL, --log_level LOG_LEVEL
                         Log level
   -e EBIT, --ebit EBIT  Minimun ebit to be considered
@@ -102,8 +101,17 @@ optional arguments:
   -q QTY, --qty QTY     Quantity of stocks to be exported.
   -d DATABASE, --database DATABASE
                         Send information to a database[POSTGRESQL].
+  -f FORMAT, --format FORMAT
+                        Format to be export [EXCEL, JSON].
   -l LIST_TICKERS [LIST_TICKERS ...], --list_tickers LIST_TICKERS [LIST_TICKERS ...]
                         List stocks instead of using the indexes.
+  -lf LIST_TICKERS_FILE, --list_tickers_file LIST_TICKERS_FILE
+                        List stocks file, a text file with a ticker by line.
+  -ri, --roic_ignore    Option to ignore roic index and use only EY index
+  -gpl GRAHAM_MAX_PL, --graham_max_pl GRAHAM_MAX_PL
+                        Maximum pl for graham formula.[Default: 15]
+  -gpvp GRAHAM_MAX_PVP, --graham_max_pvp GRAHAM_MAX_PVP
+                        Maximum pvp for graham formula.[Default: 1.5]
 ```
 
 O programa pode ser executado usando o seguinte comando
