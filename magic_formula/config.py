@@ -122,7 +122,7 @@ def get_arguments(args: list = None) -> Namespace:
 
     parser.add_argument(
         '-t', '--threads', help='Max Number of threads',
-        action='store', type=int, default=150
+        action='store', type=int, default=15
     )
 
     parser.add_argument(
