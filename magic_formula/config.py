@@ -174,8 +174,18 @@ def get_arguments(args: list = None) -> Namespace:
     )
 
     parser.add_argument(
+        '-f', '--format', help='Format to be export [EXCEL, JSON].', action='store',
+        type=str, default='EXCEL'
+    )
+
+    parser.add_argument(
         '-l', '--list_tickers', help='List stocks instead of using the indexes.',
         action='store', type=str, default=[], nargs="+"
+    )
+
+    parser.add_argument(
+        '-lf', '--list_tickers_file', help='List stocks file, a text file with a ticker by line.',
+        action='store', type=str
     )
 
     parser.add_argument(
