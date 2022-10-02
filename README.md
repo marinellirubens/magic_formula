@@ -129,7 +129,7 @@ $ docker-compose up -d
 ```
 
 Esse comando ja esta contido nos arquivos run.sh(Linux e Macos) e run.cmd(Windows), pode ser observado abaixo o output do programa abaixo:
-![program_running](img\program_running.png "program_running")
+![program_running](img/program_running.png "program_running")
 
 
 ## Output
@@ -139,4 +139,4 @@ stocks_magic_formula_{yyyymmdd}_{INDEXES_NAMES}.xlsx
 ```
 Exemplo de arquivo:
 
-![exemplo_planilha](img\exemplo_planilha.png "exemplo_planilha")
+![exemplo_planilha](img/exemplo_planilha.png "exemplo_planilha")
