@@ -30,9 +30,10 @@ from magic_formula.status_invest import get_ticker_roic_info
 __VERSION__ = '1.0.4'
 
 MAX_NUMBER_THREADS = 15
-XLSX_PATH = os.path.join(os.getcwd(), 'xlsx_files/')
-POSSIBLE_INDEXES = ['BRX100', 'IBOV', 'SMALL', 'IDIV',
-                    'MLCX', 'IGCT', 'ITAG', 'IBRA', 'IGNM', 'IMAT', 'ALL']
+OUTPUT_PATH = os.path.join(os.getcwd(), 'output_files/')
+POSSIBLE_INDEXES = {'BRX100', 'IBOV', 'SMALL', 'IDIV',
+                    'MLCX', 'IGCT', 'ITAG', 'IBRA', 'IGNM', 'IMAT', 'ALL'}
+FORMATS = {'EXCEL': 'xlsx', 'JSON': 'json'}
 
 
 class DataframColums(Enum):
@@ -105,23 +106,26 @@ def main() -> None:
 
     :return: None
     """
-    # TODO: include json exports
     # TODO: include the possibility of inform tickets and indexes on a file
     global MAX_NUMBER_THREADS
-    global XLSX_PATH
+    global OUTPUT_PATH
     options = get_arguments()
     if options.version:
         show_version()
+
+    if options.format not in FORMATS:
+        print(f"Format not supported, suported formats: {FORMATS}")
+        sys.exit(0)
 
     if options.output_folder:
         if not os.path.exists(options.output_folder):
             raise Exception('Folder informed must exist already, '
                             f'folder {options.output_folder} does not exists.')
 
-        XLSX_PATH = options.output_folder
+        OUTPUT_PATH = options.output_folder
 
-    if not os.path.exists(XLSX_PATH):
-        os.makedirs(XLSX_PATH)
+    if not os.path.exists(OUTPUT_PATH):
+        os.makedirs(OUTPUT_PATH)
 
     logger = logging.getLogger(__name__)
     logger = set_logger(logger, log_level=options.log_level)
@@ -138,7 +142,9 @@ def main() -> None:
     tickers_df = process_tickers(stock_tickers, roic_index_info, logger, options)
     tickers_df = sort_dataframe(tickers_df, logger, options.roic_ignore)
 
-    export_dataframe_to_excel(tickers_df, logger, options.qty, options.index)
+    tickers_df = export_dataframe_formating(tickers_df, logger, options.qty, options.index)
+    export_file(options.format, tickers_df, options.index, logger, options.qty)
+
     if options.database:
         if options.database not in ['POSTGRESQL']:
             logger.error(f'Option {options.database} invalid for database.')
@@ -159,6 +165,13 @@ def get_tickers_list(options: Namespace, logger: logging.Logger,
     :return: Tuple with tickers and indexes
     :rtype: tuple
     """
+    if options.list_tickers_file:
+        stock_tickers = None
+        with open(options.list_tickers_file) as ticker_file:
+            stock_tickers = [line.replace('\n', '') for line in ticker_file.readlines()]
+
+        return stock_tickers, ['LIST', ]
+
     stock_tickers = set(options.list_tickers)
     if options.list_tickers:
         return stock_tickers, ['LIST', ]
@@ -208,10 +221,36 @@ def show_version() -> None:
     sys.exit(0)
 
 
-def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
-                              logger: logging.Logger,
-                              number_of_lines: int = None,
-                              indexes: list = None) -> None:
+def get_file_name(indexes, format):
+    file_name = \
+        f'stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}' + \
+        f'_{"_".join(indexes)}.{FORMATS[format]}'
+    file_path = os.path.join(OUTPUT_PATH, file_name)
+
+    return file_path
+
+
+def export_file(format, tickers_df: pandas.DataFrame, indexes, logger, number_of_lines):
+    file_name = get_file_name(indexes, format)
+
+    logger.info(f'Exporting data into excel {file_name}')
+    if format == 'EXCEL':
+        tickers_df.to_excel(
+            excel_writer=file_name,
+            sheet_name='stocks', index=False, engine='openpyxl',
+            freeze_panes=(1, 0)
+        )
+        return
+
+    if format == 'JSON':
+        tickers_df.to_json(file_name, orient='records')
+        return
+
+
+def export_dataframe_formating(tickers_df: pandas.DataFrame,
+                               logger: logging.Logger,
+                               number_of_lines: int = None,
+                               indexes: list = None) -> None:
     """Exports the ticker dataframe into an excel file
 
     :param tickers_df: Dataframe with the stocks information
@@ -222,27 +261,17 @@ def export_dataframe_to_excel(tickers_df: pandas.DataFrame,
     :type number_of_lines: int
     :return: None
     """
+    logger.debug("Preparing to export")
     if indexes is None:
         indexes = []
-
-    excel_name = \
-        f'stocks_magic_formula_{datetime.datetime.now().strftime("%Y%m%d")}' + \
-        f'_{"_".join(indexes)}.xlsx'
-    excel_file_name = os.path.join(XLSX_PATH, excel_name)
 
     if number_of_lines:
         tickers_df = tickers_df.head(number_of_lines)
 
-    logger.info(f'Exporting data into excel {excel_file_name}')
+    tickers_df = tickers_df[DataframColums.EXCEL_DF_COLUMNS.value]
+    tickers_df.columns = DataframColums.EXCEL_DF_COLUMNS_NAMES.value
 
-    excel_df = tickers_df[DataframColums.EXCEL_DF_COLUMNS.value]
-    excel_df.columns = DataframColums.EXCEL_DF_COLUMNS_NAMES.value
-
-    excel_df.to_excel(
-        excel_writer=excel_file_name,
-        sheet_name='stocks', index=False, engine='openpyxl',
-        freeze_panes=(1, 0)
-    )
+    return tickers_df
 
 
 def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger,
