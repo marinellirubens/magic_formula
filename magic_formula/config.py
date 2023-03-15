@@ -4,6 +4,7 @@ from __future__ import absolute_import
 import logging
 import logging.handlers
 import json
+import os
 import sys
 import argparse
 from argparse import Namespace
@@ -89,6 +90,9 @@ def set_logger(logger: logging.Logger = logging.Logger(__name__), log_file_name:
     :return: logger object
     :rtype: logging.Logger
     """
+    if not os.path.exists('logs'):
+        os.makedirs('logs')
+
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - (%(threadName)-10s) - %(levelname)s - %(message)s')
     handler = logging.handlers.RotatingFileHandler(log_file_name, maxBytes=1024 * 1000,
