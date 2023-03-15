@@ -231,7 +231,8 @@ class TickerInfoBuilder:
                 ].sum()
 
             return RecomenationTrend((strong_buy + buy), (sell + strong_sell))
-        except TypeError:
+        except (TypeError, KeyError):
+            logging.warning(f'Error on {self.symbol} on get_recomendation_trend')
             return RecomenationTrend(0, 0)
 
     def get_ebit(self) -> float:
