@@ -55,11 +55,11 @@ $ source .venv/bin/activate
 $ python3 -m pip install -r requirements.txt
 ```
 
-### Usando o docker
+<!-- ### Usando o docker
 Usando o arquivo docker-compose.yml pode ser criada a imagem com o comando abaixo:
 ```bash
 docker-compose build
-```
+``` -->
 
 ## Instalação via pip
 Tambem pode ser instalado via pip com o seguinte comando abaixo:
@@ -123,10 +123,10 @@ Ou diretamente caso esteja instalado:
 $ magic_formula 
 ```
 
-Ou pode ser executado com o Docker usando o comando abaixo:
+<!-- Ou pode ser executado com o Docker usando o comando abaixo:
 ```bash
 $ docker-compose up -d
-```
+``` -->
 
 Esse comando ja esta contido nos arquivos run.sh(Linux e Macos) e run.cmd(Windows), pode ser observado abaixo o output do programa abaixo:
 ![program_running](img/program_running.png "program_running")
