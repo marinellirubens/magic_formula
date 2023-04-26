@@ -62,7 +62,7 @@ def get_ticker_roic_info(url: str) -> dict:
     roic_info_df = roic_info_df.sort_values('roic', ascending=False)
 
     roic_info_df['roic'] = roic_info_df['roic'].replace(np.NaN, 0)
-    roic_info_df['roic_index'] = [x for x, y in enumerate(roic_info_df['roic'].iteritems())]
+    roic_info_df['roic_index'] = [x for x, y in enumerate(iter(roic_info_df['roic']))]
 
     roic_info_df = roic_info_df[['ticker', 'roic_index', 'roic', 'vpa', 'lpa', 'p_L', 'p_VP', 'dy']]
     roic_info_df.set_index(['ticker'], inplace=True)
