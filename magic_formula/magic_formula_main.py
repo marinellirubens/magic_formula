@@ -189,7 +189,7 @@ def get_tickers_list(options: Namespace, logger: logging.Logger,
     return stock_tickers, indexes
 
 
-def validate_indexes(indexes: list, logger: logging.Logger) -> None:
+def validate_indexes(indexes: list, logger: logging.Logger) -> list:
     """Validate indexes
 
     :param indexes: List of indexes
@@ -384,7 +384,7 @@ def fill_magic_index_field(tickers_df: pandas.DataFrame,
     return tickers_df
 
 
-def process_earning_yield_calculation(args) -> float:
+def process_earning_yield_calculation(args) -> None:
     """Returns stock earning yield.
 
     :param symbol: Ticker symbol
@@ -411,21 +411,21 @@ def process_earning_yield_calculation(args) -> float:
     stock: MagicFormula = MagicFormula(symbol, logger, ebit_min=options.ebit,
                                        market_cap_min=options.market_cap)
     if stock.get_ticker_info() is None:
-        return False
+        return
 
     if not stock.valid_ticker_data():
-        return False
+        return
 
     stock.calculate_tev()
     earning_yield = stock.calculate_earning_yield()
 
-    roic_index_number = roic_index.get(symbol[:-3], '').get('roic_index')
-    roic = roic_index.get(symbol[:-3], '').get('roic')
-    vpa = roic_index.get(symbol[:-3], '').get('vpa')
-    lpa = roic_index.get(symbol[:-3], '').get('lpa')
-    p_l = roic_index.get(symbol[:-3], '').get('p_L')
-    p_vp = roic_index.get(symbol[:-3], '').get('p_VP')
-    dividend_yield = roic_index.get(symbol[:-3], '').get('dy')
+    roic_index_number = roic_index.get(symbol[:-3], {}).get('roic_index', 0.0)
+    roic = roic_index.get(symbol[:-3], {}).get('roic', 0)
+    vpa = roic_index.get(symbol[:-3], {}).get('vpa', 0)
+    lpa = roic_index.get(symbol[:-3], {}).get('lpa', 0)
+    p_l = roic_index.get(symbol[:-3], {}).get('p_L', 0)
+    p_vp = roic_index.get(symbol[:-3], {}).get('p_VP', 0)
+    dividend_yield = roic_index.get(symbol[:-3], {}).get('dy', 0)
     graham_vi = calculate_graham_vi(vpa, lpa, options.graham_max_pl, options.graham_max_pvp)
     graham_upside = calculate_graham_upside(stock.ticker_info.current_price, graham_vi)
     magic_index = earning_yield + roic_index_number

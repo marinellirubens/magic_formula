@@ -341,7 +341,7 @@ class TickerInfoBuilder:
         """
         return self.get_ticker_price().get('regularMarketTime', 0)
 
-    def get_shares_outstanding(self) -> str:
+    def get_shares_outstanding(self) -> float:
         """Fills variable shares_outstanding
 
         :param ticker: Ticker object

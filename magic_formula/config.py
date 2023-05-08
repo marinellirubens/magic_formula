@@ -62,7 +62,7 @@ CONFIG = {
 }
 
 
-def get_config(config_file: str = None) -> dict:
+def get_config(config_file: str = '') -> dict:
     """Returns the configuration from a config file
 
     :param config_file: json file with the configurations
@@ -109,7 +109,7 @@ def set_logger(logger: logging.Logger = logging.Logger(__name__), log_file_name:
     return logger
 
 
-def get_arguments(args: list = None) -> Namespace:
+def get_arguments(args: tuple = ()) -> Namespace:
     """Parse argument on command line execution
 
     :param args: arguments to be parsed
