@@ -250,7 +250,7 @@ def export_file(format, tickers_df: pandas.DataFrame, indexes, logger, number_of
 def export_dataframe_formating(tickers_df: pandas.DataFrame,
                                logger: logging.Logger,
                                number_of_lines: int = None,
-                               indexes: list = None) -> None:
+                               indexes: list = None) -> pandas.DataFrame:
     """Exports the ticker dataframe into an excel file
 
     :param tickers_df: Dataframe with the stocks information
