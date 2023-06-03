@@ -41,9 +41,10 @@ class TickerInfo:
 
 class TickerInfoBuilder:
     """Class to build the TickerInfo object"""
-    def __init__(self, ticker: yahooquery.Ticker, symbol: str) -> None:
+    def __init__(self, ticker: yahooquery.Ticker, symbol: str, logger: logging.Logger) -> None:
         self.ticker = ticker
         self.symbol = symbol
+        self.logger = logger
 
     def build(self) -> TickerInfo:
         """Builds the TickerInfo object
@@ -231,7 +232,8 @@ class TickerInfoBuilder:
                 ].sum()
 
             return RecomenationTrend((strong_buy + buy), (sell + strong_sell))
-        except TypeError:
+        except (TypeError, KeyError):
+            self.logger.warning(f'Error on {self.symbol} on get_recomendation_trend')
             return RecomenationTrend(0, 0)
 
     def get_ebit(self) -> float:
@@ -339,7 +341,7 @@ class TickerInfoBuilder:
         """
         return self.get_ticker_price().get('regularMarketTime', 0)
 
-    def get_shares_outstanding(self) -> str:
+    def get_shares_outstanding(self) -> float:
         """Fills variable shares_outstanding
 
         :param ticker: Ticker object
@@ -440,7 +442,7 @@ class MagicFormula():
         :param ticker: Ticker object
         :type ticker: yahooquery.Ticker
         """
-        builder = TickerInfoBuilder(symbol=self.symbol, ticker=ticker)
+        builder = TickerInfoBuilder(symbol=self.symbol, ticker=ticker, logger=self.logger)
         self.ticker_info: TickerInfo = builder.build()
 
     def valid_ticker_info(self) -> bool:

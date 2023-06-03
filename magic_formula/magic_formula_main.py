@@ -189,7 +189,7 @@ def get_tickers_list(options: Namespace, logger: logging.Logger,
     return stock_tickers, indexes
 
 
-def validate_indexes(indexes: list, logger: logging.Logger) -> None:
+def validate_indexes(indexes: list, logger: logging.Logger) -> list:
     """Validate indexes
 
     :param indexes: List of indexes
@@ -250,7 +250,7 @@ def export_file(format, tickers_df: pandas.DataFrame, indexes, logger, number_of
 def export_dataframe_formating(tickers_df: pandas.DataFrame,
                                logger: logging.Logger,
                                number_of_lines: int = None,
-                               indexes: list = None) -> None:
+                               indexes: list = None) -> pandas.DataFrame:
     """Exports the ticker dataframe into an excel file
 
     :param tickers_df: Dataframe with the stocks information
@@ -384,7 +384,7 @@ def fill_magic_index_field(tickers_df: pandas.DataFrame,
     return tickers_df
 
 
-def process_earning_yield_calculation(args) -> float:
+def process_earning_yield_calculation(args) -> None:
     """Returns stock earning yield.
 
     :param symbol: Ticker symbol
@@ -411,10 +411,10 @@ def process_earning_yield_calculation(args) -> float:
     stock: MagicFormula = MagicFormula(symbol, logger, ebit_min=options.ebit,
                                        market_cap_min=options.market_cap)
     if stock.get_ticker_info() is None:
-        return False
+        return
 
     if not stock.valid_ticker_data():
-        return False
+        return
 
     stock.calculate_tev()
     earning_yield = stock.calculate_earning_yield()

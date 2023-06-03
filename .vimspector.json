@@ -1,0 +1,21 @@
+{
+  "configurations": {
+    "run": {
+      "adapter": "debugpy",
+      "breakpoints": {
+        "exception": {
+          "all": "N",
+          "uncaught": "N"
+        }
+      },
+      "configuration": {
+        "request": "launch",
+        "protocol": "auto",
+        "stopOnEntry": true,
+        "console": "integratedTerminal",
+        "program": "${workspaceRoot}/magic_formula/magic_formula_main.py",
+        "cwd": "${workspaceRoot}"
+      }
+    }
+  }
+}
