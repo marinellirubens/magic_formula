@@ -140,9 +140,9 @@ class TickerInfoBuilder:
         if isinstance(asset_profile, str):
             return []
 
-        return asset_profile.get('industry')
+        return asset_profile.get('industry', [])
 
-    def get_asset_profile(self) -> dict:
+    def get_asset_profile(self) -> Union[dict, str]:
         """Fills variable asset_profile
 
         :param ticker: Ticker object
