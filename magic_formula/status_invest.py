@@ -1,9 +1,11 @@
 """Module to connect on status invest and get informations"""
 from __future__ import absolute_import
+from datetime import datetime
 
 import io
 import logging
 
+import os
 import json
 import bs4
 import numpy as np
@@ -49,6 +51,30 @@ def get_ibrx_info(url: str, logger: logging.Logger) -> set:
     return tickers_ibrx100
 
 
+def check_cache_file(file_name: str = 'cache/request.json') -> dict:
+    if not os.path.exists('cache'):
+        os.makedirs('cache')
+
+    if not os.path.exists(file_name):
+        return {}
+
+    file_time = os.path.getctime(file_name)
+    if (datetime.now() - datetime.fromtimestamp(file_time)).days > 1:
+        return {}
+
+    with open(file_name) as file:
+        json_text = json.load(file)
+    return json_text
+
+
+def write_cache_file(content: dict, file_name: str = 'cache/request.json'):
+    if not os.path.exists('cache'):
+        os.makedirs('cache')
+
+    with open(file_name, 'w') as file:
+        json.dump(content, file)
+
+
 def get_ticker_roic_info(url: str) -> dict:
     """Returns index informations
 
@@ -57,7 +83,10 @@ def get_ticker_roic_info(url: str) -> dict:
     :return: Dictionary with index informations
     :rtype: dict
     """
-    tickers_info = requests.get(url, headers=HEADERS).json().get('list', {})
+    tickers_info = check_cache_file()
+    if not tickers_info:
+        tickers_info = requests.get(url, headers=HEADERS).json().get('list', {})
+        write_cache_file(tickers_info)
 
     roic_info_df: pandas.DataFrame = pandas.read_json(json.dumps(tickers_info))
 

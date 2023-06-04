@@ -3,8 +3,12 @@ from __future__ import absolute_import
 
 import logging
 from dataclasses import dataclass
+import datetime
 from typing import Union
 import yahooquery
+import pickle
+import os
+import pandas
 
 
 @dataclass
@@ -38,10 +42,18 @@ class TickerInfo:
     total_debt: float
     all_modules_found: bool = False
 
+class TickerMock:
+    def __init__(self) -> None:
+        self.all_modules = {}
+        self.asset_profile = {}
+        self.financial_data = {}
+        self.summary_detail = {}
+        self.recommendation_trend = pandas.DataFrame()
+
 
 class TickerInfoBuilder:
     """Class to build the TickerInfo object"""
-    def __init__(self, ticker: yahooquery.Ticker, symbol: str, logger: logging.Logger) -> None:
+    def __init__(self, ticker: TickerMock, symbol: str, logger: logging.Logger) -> None:
         self.ticker = ticker
         self.symbol = symbol
         self.logger = logger
@@ -391,14 +403,49 @@ class MagicFormula():
         self.market_cap_min = market_cap_min
         self.dividend_yield = 0
         self.tev = 0
+        self.file_ttl = datetime.timedelta(days=1)
 
-    def get_ticker_info(self) -> yahooquery.Ticker:
+    def save_ticker_picle(self, ticker: TickerMock):
+        if not os.path.exists('cache'):
+            os.makedirs('cache')
+
+        with open(f"cache/{self.symbol}.cache", "bw") as file:
+            pickle.dump(ticker, file)
+
+    def get_ticker_file(self) -> Union[TickerMock, None]:
+        if not os.path.exists('cache'):
+            os.makedirs('cache')
+
+        file_name = f"cache/{self.symbol}.cache"
+        if not os.path.exists(file_name):
+            return None
+
+        if (datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getctime(file_name))).days > self.file_ttl.days:
+            return None
+
+        with open(file_name, "rb") as file:
+            ticker_info = pickle.load(file)
+        return ticker_info
+
+    def get_ticker_info(self) -> Union[TickerMock, None]:
         """Returns the ticker info
 
         :return: Ticker info
         :rtype: yahooquery.Ticker
         """
-        ticker: yahooquery.Ticker = yahooquery.Ticker(self.symbol)
+        # import ipdb; ipdb.set_trace()
+        ticker = self.get_ticker_file()
+        if not ticker:
+            ticker_base = yahooquery.Ticker(self.symbol)
+            ticker = TickerMock()
+            ticker.all_modules = ticker_base.all_modules
+            ticker.asset_profile = ticker_base.asset_profile
+            ticker.financial_data = ticker_base.financial_data
+            ticker.summary_detail = ticker_base.summary_detail
+            ticker.recommendation_trend = ticker_base.recommendation_trend
+
+            self.save_ticker_picle(ticker)
+
         self.fill_ticker_info(ticker)
 
         if isinstance(self.ticker_info.asset_profile, str):
@@ -436,7 +483,7 @@ class MagicFormula():
 
         return True
 
-    def fill_ticker_info(self, ticker: yahooquery.Ticker) -> None:
+    def fill_ticker_info(self, ticker: TickerMock) -> None:
         """Fills the variable ticker_info
 
         :param ticker: Ticker object
