@@ -4,6 +4,7 @@ from __future__ import absolute_import
 import io
 import logging
 
+import json
 import bs4
 import numpy as np
 import pandas
@@ -25,6 +26,7 @@ HEADERS = {
     'upgrade-insecure-requests': '1',
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
 }
+
 
 def get_ibrx_info(url: str, logger: logging.Logger) -> set:
     """Returns set with index tickers
@@ -55,16 +57,20 @@ def get_ticker_roic_info(url: str) -> dict:
     :return: Dictionary with index informations
     :rtype: dict
     """
+    tickers_info = requests.get(url, headers=HEADERS).json().get('list', {})
 
-    tickers_info = requests.get(url, headers=HEADERS).content
-
-    roic_info_df: pandas.DataFrame = pandas.read_json(io.StringIO(tickers_info.decode('utf-8')))
-    roic_info_df = roic_info_df.sort_values('roic', ascending=False)
+    roic_info_df: pandas.DataFrame = pandas.read_json(json.dumps(tickers_info))
 
     roic_info_df['roic'] = roic_info_df['roic'].replace(np.NaN, 0)
-    roic_info_df['roic_index'] = [x for x, y in enumerate(iter(roic_info_df['roic']))]
+    roic_info_df['vpa'] = roic_info_df['vpa'].replace(np.NaN, 0)
+    roic_info_df['p_l'] = roic_info_df['p_l'].replace(np.NaN, 0)
+    roic_info_df['p_vp'] = roic_info_df['p_vp'].replace(np.NaN, 0)
+    roic_info_df['dy'] = roic_info_df['dy'].replace(np.NaN, 0)
+    roic_info_df['roic_index'] = [x for x, _ in enumerate(iter(roic_info_df['roic']))]
 
-    roic_info_df = roic_info_df[['ticker', 'roic_index', 'roic', 'vpa', 'lpa', 'p_l', 'p_vp', 'dy']]
+    roic_info_df = roic_info_df[['ticker', 'roic_index', 'roic',
+                                 'vpa', 'lpa', 'p_l', 'p_vp', 'dy']]
     roic_info_df.set_index(['ticker'], inplace=True)
 
     return roic_info_df.to_dict('index')
+

@@ -48,8 +48,8 @@ class DataframColums(Enum):
         'graham_upside',
         'vpa',
         'lpa',
-        'p_L',
-        'p_VP',
+        'p_l',
+        'p_vp',
         'market_cap',
         'patrimonio_liquido',
         'ebit',
@@ -75,8 +75,8 @@ class DataframColums(Enum):
         'graham_upside',
         'vpa',
         'lpa',
-        'p_L',
-        'p_VP',
+        'p_l',
+        'p_vp',
         'market_cap',
         'net_worth',
         'ebit',
@@ -97,7 +97,7 @@ class DataframColums(Enum):
         'roic', 'buy_recomendation', 'sell_recomendation', 'current_price',
         'regular_market_time', 'market_cap', 'patrimonio_liquido', 'ebit',
         'total_debt', 'total_cash', 'shares_outstanding', 'long_name',
-        'industry', 'dividend_yield', 'vpa', 'lpa', 'p_L', 'p_VP', 'graham_vi', 'graham_upside'
+        'industry', 'dividend_yield', 'vpa', 'lpa', 'p_l', 'p_vp', 'graham_vi', 'graham_upside'
     ]
 
 
@@ -419,7 +419,6 @@ def process_earning_yield_calculation(args) -> None:
     stock.calculate_tev()
     earning_yield = stock.calculate_earning_yield()
 
-    # import ipdb; ipdb.set_trace()
     roic_index_number = roic_index.get(symbol[:-3], {}).get('roic_index', 0)
     roic = roic_index.get(symbol[:-3], {}).get('roic', 0)
     vpa = roic_index.get(symbol[:-3], {}).get('vpa', 0)
