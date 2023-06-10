@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     entry_points={
         "console_scripts": [
-            "magic_formula = magic_formula.magic_formula_main:main",
+            "magic_formula = magic_formula.main:main",
         ]
     },
     url='https://github.com/marinellirubens/magic_formula',

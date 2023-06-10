@@ -1,1 +1,1 @@
-python magic_formula\magic_formula_main.py
+python magic_formula\main.py

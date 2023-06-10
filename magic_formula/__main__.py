@@ -3,9 +3,9 @@ from __future__ import absolute_import
 __metaclass__ = type
 
 
-from magic_formula import magic_formula_main
+from magic_formula import main as mf
 
 
 def main():
     """Main function"""
-    magic_formula_main.main()
+    mf.main()

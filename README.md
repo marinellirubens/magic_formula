@@ -77,7 +77,7 @@ python3 setup.py install
 Podem ser verificados os comandos de usando o argumento -h:
 ```shell
 $ magic_formula -h
-usage: magic_formula_main.py [-h] [-V] [-t THREADS] [-o OUTPUT_FOLDER] [-i INDEX [INDEX ...]] [-ll LOG_LEVEL] [-e EBIT] [-m MARKET_CAP] [-q QTY] [-d DATABASE] [-f FORMAT]
+usage: main.py [-h] [-V] [-t THREADS] [-o OUTPUT_FOLDER] [-i INDEX [INDEX ...]] [-ll LOG_LEVEL] [-e EBIT] [-m MARKET_CAP] [-q QTY] [-d DATABASE] [-f FORMAT]
                              [-l LIST_TICKERS [LIST_TICKERS ...]] [-lf LIST_TICKERS_FILE] [-ri] [-gpl GRAHAM_MAX_PL] [-gpvp GRAHAM_MAX_PVP]
 
 Parses command.
@@ -116,7 +116,7 @@ options:
 
 O programa pode ser executado usando o seguinte comando
 ```bash
-$ python3 magic_formula/magic_formula_main.py
+$ python3 magic_formula/main.py
 ```
 Ou diretamente caso esteja instalado:
 ```bash
