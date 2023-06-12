@@ -249,8 +249,8 @@ def export_file(format, tickers_df: pandas.DataFrame, indexes, logger, number_of
 
 def export_dataframe_formating(tickers_df: pandas.DataFrame,
                                logger: logging.Logger,
-                               number_of_lines: int = None,
-                               indexes: list = None) -> pandas.DataFrame:
+                               number_of_lines: int = 0,
+                               indexes: list = []) -> pandas.DataFrame:
     """Exports the ticker dataframe into an excel file
 
     :param tickers_df: Dataframe with the stocks information
@@ -276,7 +276,7 @@ def export_dataframe_formating(tickers_df: pandas.DataFrame,
 
 def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger,
                             connection_string: str,
-                            number_of_lines: int = None) -> None:
+                            number_of_lines: int = 0) -> None:
     """Exportts the ticker dataframe into an postgresql
 
     :param tickers_df: Dataframe with the stocks information
@@ -296,7 +296,7 @@ def export_dataframe_to_sql(tickers_df: pandas.DataFrame, logger: logging.Logger
 
         engine = sqlalchemy.create_engine(connection_string)
         tickers_df.to_sql('magicformula', engine, if_exists='append', index=False)
-    except sqlalchemy.exc.OperationalError as error:
+    except Exception as error:
         logger.error(f'Error on conection with database {error}')
 
 
