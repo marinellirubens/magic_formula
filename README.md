@@ -1,4 +1,8 @@
 # Magic Formula
+PROJETO ENCERRADO: Devido a muitos problemas com o yahoo finance eu decidi fazer uma nova versão usando as informações do status invest, vou criar um novo repositorio pois pretendo refazer do zero de uma forma mais simples.
+
+
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GitHub Actions](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fatrox%2Fsync-dotenv%2Fbadge)](https://actions-badge.atrox.dev/marinellirubens/magic_formula/goto)
 
